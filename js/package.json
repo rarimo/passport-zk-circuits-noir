@@ -1,0 +1,13 @@
+{
+  "name": "js",
+  "version": "1.0.0",
+  "main": "asn1.js",
+  "type": "module",
+  "scripts": {
+    "test": "node process_passport.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
