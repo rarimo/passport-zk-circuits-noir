@@ -75,8 +75,7 @@ pub fn register_identity<
     // 7. Get passport hash
     let passport_hash = extract_passport_hash::<HASH_ALGO>(sa_hash);
 
-    (dg15_pk_hash, dg1_commitment, sk_hash, passport_hash)
-        
+    (dg15_pk_hash, passport_hash, dg1_commitment, sk_hash)
 }
 
 fn passport_verification_flow<
