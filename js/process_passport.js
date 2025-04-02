@@ -369,7 +369,7 @@ function extractFromDg15(dg15) {
             n: n,
             exp: exp
         }
-        aa_shift = dg15_decoded.dump.split(BigInt(pk.n).toString(16).toUpperCase())[0].length
+        aa_shift = dg15_decoded.dump.split(BigInt(pk.n).toString(16).toUpperCase())[0].length / 2
     }
 
     return [pk, aa_shift]
