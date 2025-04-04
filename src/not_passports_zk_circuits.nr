@@ -60,7 +60,7 @@ pub fn register_identity<
     let leaf = extract_pk_hash::<N, EC_FIELD_SIZE, SIG_TYPE>(pk);
     let key  = leaf;
     let is_verfied = super::smt::smt_verifier::<80>(icao_root, leaf, key, inclusion_brances);
-    assert(is_verfied == 1, "Is not verified");
+    assert(is_verfied == 1, "HUI");
 
     // 4. Get dg15 pubkey hash
     let dg15_pk_hash = extract_dg15_pk_hash::<DG15_LEN, AA_SHIFT, AA_SIG_TYPE>(dg15);
@@ -75,7 +75,8 @@ pub fn register_identity<
     // 7. Get passport hash
     let passport_hash = extract_passport_hash::<HASH_ALGO>(sa_hash);
 
-    (dg15_pk_hash, passport_hash, dg1_commitment, sk_hash)
+    (dg15_pk_hash, dg1_commitment, sk_hash, passport_hash)
+        
 }
 
 fn passport_verification_flow<
@@ -713,7 +714,7 @@ fn u8_to_8_u1(x:u8) -> [u1; 8]{
             (out[4] as u8) * 8 +
             (out[5] as u8) * 4 + 
             (out[6] as u8) * 2 +
-            (out[7] as u8) == x, "Error in u8_to_8_u1");
+            (out[7] as u8) == x, "hui");
     out
 }
 

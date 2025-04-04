@@ -3,7 +3,7 @@ pub fn is_zero(x: Field) -> Field {
     let inv = if x != 0 { 1 / x } else { 0 };
     let out = 1 - (x * inv);
     
-    assert(x * out == 0, "Is zero: x * out != 0");
+    assert(x * out == 0, "HUI");
 
     out
 }
