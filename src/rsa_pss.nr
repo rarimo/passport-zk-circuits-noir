@@ -73,7 +73,7 @@ pub fn verify_rsa_pss<let N_BITS: u32, let N: u32, let HASH_SIZE: u32, let SALT_
         }
     }
     for i in 0..HASH_SIZE{
-        assert(hash[i] == hash_result[i], "Hash mismatch");
+        assert(hash[i] == hash_result[i], "hui");
     }
 }
 
