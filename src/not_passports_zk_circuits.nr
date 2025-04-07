@@ -313,7 +313,7 @@ fn verify_signature<
             hashed
         );
     }
-    if (SIG_TYPE == 20){
+    if (SIG_TYPE == 21){
         let mut limbs_x: [Field; 3] = [0; 3];
         let mut limbs_y: [Field; 3] = [0; 3];
         let mut limbs_r: [Field; 3] = [0; 3];
@@ -344,7 +344,7 @@ fn verify_signature<
 
         assert(verify_brainpoolp256r1_ecdsa(public_key_x, public_key_y, hashed, (r, s)));
     }
-    if (SIG_TYPE == 21){
+    if (SIG_TYPE == 20){
         let mut limbs_x: [Field; 3] = [0; 3];
         let mut limbs_y: [Field; 3] = [0; 3];
         let mut limbs_r: [Field; 3] = [0; 3];
