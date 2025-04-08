@@ -1,6 +1,0 @@
-[package]
-name = "binary_field_experiments"
-type = "bin"
-authors = [""]
-
-[dependencies]
