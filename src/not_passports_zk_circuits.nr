@@ -41,6 +41,7 @@ pub fn register_identity<
         EC_LEN, 
         SA_LEN, 
         DG_HASH_ALGO,
+        HASH_ALGO,
         DG1_SHIFT,
         DG15_SHIFT,
         EC_SHIFT,
@@ -85,6 +86,7 @@ fn passport_verification_flow<
     let EC_LEN: u32,
     let SA_LEN: u32,
     let DG_HASH_ALGO: u32,
+    let HASH_ALGO: u32,
     let DG1_SHIFT: u32,
     let DG15_SHIFT: u32,
     let EC_SHIFT: u32>(
@@ -101,13 +103,16 @@ fn passport_verification_flow<
     if (DG15_LEN != 0){
         dg15_hash = passport_hash::<DG_HASH_ALGO, DG15_LEN>(dg15);
     }
-    let ec_hash: [u8; DG_HASH_ALGO] = passport_hash::<DG_HASH_ALGO, EC_LEN>(ec);
+    let ec_hash: [u8; HASH_ALGO] = passport_hash::<HASH_ALGO, EC_LEN>(ec);
     
     for i in 0..DG_HASH_ALGO{
         assert(dg1_hash[i] == ec[i + DG1_SHIFT], "dg1");
         if (DG15_LEN != 0){
             assert(dg15_hash[i] == ec[i + DG15_SHIFT], "dg15");
         }
+    }
+
+    for i in 0..HASH_ALGO{
         assert(ec_hash[i] == sa[i + EC_SHIFT], "ec");
     }
 }
