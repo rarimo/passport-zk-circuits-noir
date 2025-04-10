@@ -353,7 +353,7 @@ function extractFromDg15(dg15){
     let aa_shift = 0;
     let pk_type = dg15_decoded.sub[0].sub[1].content.slice(0,8) == "00000100" ? "ecdsa" : "rsa"
     let aa_sig_type = 0;
-
+    print(pk_type);
     if (pk_type == "ecdsa"){
         let pk_bit = dg15_decoded.sub[0].sub[1].content.slice(8)
         pk = {
@@ -402,16 +402,17 @@ function extractFromDg15(dg15){
             exp: exp
         }
         
-        if (BigInt(pk.n).toString(16).length == 384){
-            aa_sig_type = 3;
-        }
-        if (BigInt(pk.n).toString(16).length == 256){
-            if (pk.exp.toString() == "3"){
-                aa_sig_type = 2;
-            } else {
-                aa_sig_type = 1;
-            }
-        }
+        // if (BigInt(pk.n).toString(16).length == 384){
+        //     aa_sig_type = 3;
+        // }
+        // if (BigInt(pk.n).toString(16).length == 256){
+        //     if (pk.exp.toString() == "3"){
+        //         aa_sig_type = 2;
+        //     } else {
+        //         aa_sig_type = 1;
+        //     }
+        // }
+        aa_sig_type = 1;
         aa_shift = dg15_decoded.dump.split(BigInt(pk.n).toString(16).toUpperCase())[0].length / 2
     }
     
@@ -550,4 +551,4 @@ function processPassport(filePath){
 
 }
 
-processPassport("esp.json");
+processPassport("passport.json");
