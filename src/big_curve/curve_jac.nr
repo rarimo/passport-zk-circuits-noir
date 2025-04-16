@@ -1,5 +1,5 @@
-use dep::bignum::BigNum;
-use dep::bignum::BigNumTrait;
+use crate::bignum::BigNum;
+use crate::bignum::BigNumTrait;
 use super::{CurveParamsTrait, scalar_field::ScalarField};
 use crate::big_curve::BigCurve;
 // use super::ecdsa::scalar_field::ScalarField;

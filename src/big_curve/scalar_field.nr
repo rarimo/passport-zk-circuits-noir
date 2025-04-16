@@ -1,5 +1,5 @@
-use dep::bignum::BigNum;
-use dep::bignum::BigNumTrait;
+use crate::bignum::BigNum;
+use crate::bignum::BigNumTrait;
 
 /**
  * @brief ScalarField represents a scalar multiplier as a sequence of 4-bit slices

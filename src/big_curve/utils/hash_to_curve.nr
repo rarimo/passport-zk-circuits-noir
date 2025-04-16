@@ -1,4 +1,4 @@
-use dep::bignum::BigNumTrait;
+use crate::bignum::BigNumTrait;
 
 unconstrained fn hash_to_curve_inner<Fq>(
     seedbase: Field,

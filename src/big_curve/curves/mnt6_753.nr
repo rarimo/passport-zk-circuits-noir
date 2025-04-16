@@ -1,6 +1,6 @@
-use dep::bignum::BigNum;
-use dep::bignum::fields::mnt6_753Fq::MNT6_753_Fq_Params;
-use dep::bignum::fields::mnt6_753Fr::MNT6_753_Fr_Params;
+use crate::bignum::BigNum;
+use crate::bignum::fields::mnt6_753Fq::MNT6_753_Fq_Params;
+use crate::bignum::fields::mnt6_753Fr::MNT6_753_Fr_Params;
 use crate::big_curve::CurveParamsTrait;
 use crate::big_curve::BigCurve;
 use crate::big_curve::scalar_field::ScalarField;

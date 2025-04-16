@@ -12,11 +12,13 @@ use super::brainpoolP512t1::params::{BrainpoolP512t1Fq, BrainpoolP512t1Fr};
 use super::brainpoolP512t1::curve::BrainpoolP512t1_Params;
 use crate::sigver::secp521r1::params::{Secp521r1Fq, Secp521r1Fr};
 use crate::sigver::secp521r1::curve::{SECP521r1_SCALAR_SLICES, Secp521r1_Params};
+use crate::sigver::secp224r1::params::{Secp224r1Fq, Secp224r1Fr};
+use crate::sigver::secp224r1::curve::{SECP224r1_SCALAR_SLICES, Secp224r1_Params};
 use crate::big_curve::scalar_field::ScalarField;
 use crate::big_curve::CurveParamsTrait;
 use crate::big_curve::BigCurve;
-use bignum::BigNum;
-use bignum::params::BigNumParamsGetter;
+use crate::bignum::BigNum;
+use crate::bignum::params::BigNumParamsGetter;
 use crate::big_curve::curves::secp384r1::{Secp384r1Fq, Secp384r1Fr, Secp384r1_Params};
 use crate::big_curve::curves::secp256r1::{Secp256r1Fq, Secp256r1Fr, Secp256r1_Params};
 
