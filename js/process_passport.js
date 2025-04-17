@@ -1,5 +1,5 @@
 
-import {decoded, Base64} from "./asn1.js"
+import {decoded, Base64, Hex} from "./asn1.js"
 import { poseidon } from "./poseidon.js";
 import fs from 'fs';
 import { createHash } from 'crypto';
@@ -476,6 +476,7 @@ function writeToToml(inputs){
     const res_str = `dg1=${inputs.dg1}\ndg15=${inputs.dg15}\nec=${inputs.ec}\nicao_root="${inputs.icao_root}"\ninclusion_branches=${inputs.inclusion_branches}\npk=${inputs.pk}\nreduction_pk=${inputs.reduction}\nsa=${inputs.sa}\nsig=${inputs.sig}\nsk_identity="${inputs.sk_identity}"`.replaceAll(",", `","`).replaceAll("[", `["`).replaceAll("]", `"]`).replace(`dg15=[""]`, "dg15=[]")
     fs.writeFile("../Prover.toml", res_str, "utf-8", Error);
 }
+
 function processPassport(filePath){
     // Extract json data
     const json = readJsonFileSync(filePath)

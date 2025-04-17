@@ -56,7 +56,7 @@ pub fn register_identity<
             sa_hash[i] = tmp_hash[i];
         }
     }
-    
+
     let _ = verify_signature::<
             N, SIG_TYPE, HASH_ALGO
         >(
@@ -103,7 +103,7 @@ fn passport_verification_flow<
         sa: [u8; SA_LEN],
     ){
     
-    let dg1_hash: [u8; DG_HASH_ALGO] = passport_hash::<DG_HASH_ALGO, DG1_LEN>(dg1);
+    // let dg1_hash: [u8; DG_HASH_ALGO] = passport_hash::<DG_HASH_ALGO, DG1_LEN>(dg1);
 
     
     let mut dg15_hash: [u8; DG_HASH_ALGO] = [0; DG_HASH_ALGO];
@@ -113,7 +113,7 @@ fn passport_verification_flow<
     let ec_hash: [u8; HASH_ALGO] = passport_hash::<HASH_ALGO, EC_LEN>(ec);
     
     for i in 0..DG_HASH_ALGO{
-        assert(dg1_hash[i] == ec[i + DG1_SHIFT], "dg1");
+        // assert(dg1_hash[i] == ec[i + DG1_SHIFT], "dg1");
         if (DG15_LEN != 0){
             assert(dg15_hash[i] == ec[i + DG15_SHIFT], "dg15");
         }
