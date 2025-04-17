@@ -4,54 +4,60 @@ const
 let decoder;
 
 export class Hex {
+    static #decoder = null; // Private static field
 
-    /**
-     * Decodes an hexadecimal value.
-     * @param {string|Array|Uint8Array} a - a string representing hexadecimal data, or an array representation of its charcodes
-     */
-    static decode(a) {
-        let isString = (typeof a == 'string');
-        let i;
-        if (decoder === undefined) {
-            let hex = '0123456789ABCDEF',
-                ignore = ' \f\n\r\t\u00A0\u2028\u2029';
-            decoder = [];
-            for (i = 0; i < 16; ++i)
-                decoder[hex.charCodeAt(i)] = i;
-            hex = hex.toLowerCase();
-            for (i = 10; i < 16; ++i)
-                decoder[hex.charCodeAt(i)] = i;
-            for (i = 0; i < ignore.length; ++i)
-                decoder[ignore.charCodeAt(i)] = -1;
+    static #initDecoder() {
+        const hex = '0123456789ABCDEF';
+        const ignore = ' \f\n\r\t\u00A0\u2028\u2029';
+        Hex.#decoder = new Array(0xFFFF);
+        
+        // Initialize uppercase and lowercase
+        for (let i = 0; i < 16; i++) {
+            Hex.#decoder[hex.charCodeAt(i)] = i;
+            Hex.#decoder[hex.toLowerCase().charCodeAt(i)] = i;
         }
-        let out = haveU8 ? new Uint8Array(a.length >> 1) : [],
-            bits = 0,
-            char_count = 0,
-            len = 0;
-        for (i = 0; i < a.length; ++i) {
-            let c = isString ? a.charCodeAt(i) : a[i];
-            c = decoder[c];
-            if (c == -1)
-                continue;
-            if (c === undefined)
-                throw 'Illegal character at offset ' + i;
-            bits |= c;
-            if (++char_count >= 2) {
-                out[len++] = bits;
-                bits = 0;
-                char_count = 0;
-            } else {
-                bits <<= 4;
-            }
+        
+        // Set ignored characters
+        for (const char of ignore) {
+            Hex.#decoder[char.charCodeAt(0)] = -1;
         }
-        if (char_count)
-            throw 'Hex encoding incomplete: 4 bits missing';
-        if (haveU8 && out.length > len) // in case it was originally longer because of ignored characters
-            out = out.subarray(0, len);
-        return out;
     }
 
+    static decode(a) {
+        if (!Hex.#decoder) Hex.#initDecoder();
+        
+        const isString = typeof a === 'string';
+        const haveU8 = typeof Uint8Array !== 'undefined';
+        let bits = 0;
+        let charCount = 0;
+        const result = [];
+
+        for (let i = 0; i < a.length; i++) {
+            const code = isString ? a.charCodeAt(i) : a[i];
+            const value = Hex.#decoder[code];
+            
+            if (value === -1) continue; // Skip ignored chars
+            if (value === undefined) {
+                throw new Error(`Invalid hex character: ${String.fromCharCode(code)}`);
+            }
+
+            bits = (bits << 4) | value;
+            charCount++;
+            
+            if (charCount === 2) {
+                result.push(bits);
+                bits = charCount = 0;
+            }
+        }
+
+        if (charCount !== 0) {
+            throw new Error("Incomplete hex pair");
+        }
+
+        return haveU8 ? new Uint8Array(result) : result;
+    }
 }
+
 
 export class Base64 {
 

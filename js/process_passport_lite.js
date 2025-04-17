@@ -128,6 +128,10 @@ function getSigType(pk, sig, hashType) {
         // Secp256r1
         return 20;
 
+      case "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFFFFFFFFFFFC":
+        //Secp192r1
+        return 23;
+
       case "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFE":
         //secp224r1
         return 24;
@@ -644,7 +648,7 @@ function findInCSV(filePath, inputValue) {
 
 function processPassport(filePath, value) {
   const extracted = findInCSV(filePath, value);
-  //   print(extracted);
+  // print(extracted);
 
   const dg1_bytes = [];
   // Get dg1 and dg15 from json
@@ -749,4 +753,4 @@ function processPassport(filePath, value) {
   writeToToml(inputs);
 }
 
-processPassport("tmp.csv", 19);
+processPassport("tmp.csv", 104);
