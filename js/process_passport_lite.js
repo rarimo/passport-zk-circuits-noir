@@ -204,10 +204,9 @@ function extract_encapsulated_content(asn1) {
 
 function getDg1Shift(asn1) {
   const ec = getFirstOctetString(asn1);
-  const dg1Hash = ec.sub[0].sub[2].sub[0].sub[1].content;
+  const dg1Hash = ec.sub[0].sub[2].sub[0].sub[1].content.toLowerCase();
   return (
-    ec.content.toLowerCase().split(Buffer.from(dg1Hash).toString("hex"))[0]
-      .length / 2
+    ec.content.toLowerCase().split(dg1Hash)[0].length / 2
   );
 }
 
@@ -731,7 +730,7 @@ function processPassport(filePath, value) {
 
   const old_naming_convention = `registerIdentity_${compile_params.sig_type}_${
     dg_hash_type * 8
-  }_${dg1_bytes.length == 93 ? 3 : 1}_${
+  }_3_${
     hash_type <= 32
       ? Math.ceil((ec_bytes.length + 8) / 64)
       : Math.ceil((ec_bytes.length + 8) / 128)
@@ -753,4 +752,4 @@ function processPassport(filePath, value) {
   writeToToml(inputs);
 }
 
-processPassport("tmp.csv", 104);
+processPassport("tmp.csv", 98);
