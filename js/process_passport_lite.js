@@ -116,6 +116,9 @@ function getSigType(pk, sig, hashType) {
     if (pk.n.length == 512 && pk.exp == "10001" && hashType == "20") {
       return 3;
     }
+    if (pk.n.length == 512 && pk.exp == "10001" && hashType == "64") {
+      return 5;
+    }
   }
   if (sig.r) {
     // print(pk.param);
@@ -674,7 +677,11 @@ function processPassport(filePath, value) {
       ? extract_rsa_pubkey(asn1_decoded)
       : extract_ecdsa_pubkey(asn1_decoded);
   // get sig algo
-  const sigType = getSigType(pk, sig, hash_type);
+  let sigType = getSigType(pk, sig, hash_type);
+  const isSha256 = asn1_decoded.sub[0].sub[1].sub[0]?.sub[4]?.sub[0]?.sub[4]?.sub[0]?.content.toLowerCase().indexOf("sha256") !== -1 ? true : false
+  if (sigType == 5 && isSha256){
+    sigType = 3;
+  }
 
   if (sigType == 0) print("UNKNOWN TECHONOLY");
 
@@ -752,4 +759,4 @@ function processPassport(filePath, value) {
   writeToToml(inputs);
 }
 
-processPassport("tmp.csv", 98);
+processPassport("tmp.csv", 158);

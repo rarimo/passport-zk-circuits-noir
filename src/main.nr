@@ -1,4 +1,4 @@
-// registerIdentity_21_256_3_4_576_232_NA
+//registerIdentity_3_512_3_3_336_264_NA
 pub mod bignum;
 pub mod test_main;
 pub mod sigver;
@@ -14,13 +14,32 @@ pub mod utils;
 mod not_passports_zk_circuits;
 use not_passports_zk_circuits::register_identity;
 
-use sigver::recursive_curve_proofs::recursive;
-
-
-// fn main(s1: [Field; 4], s2: [Field; 4], p1: [[Field; 4]; 2], p2: [[Field; 4]; 2], index: u32, prev_index: u32, table: [[[[Field; 4]; 2]; 4]; 4], verification_key: [Field; 115], proof: [Field; 254], public_inputs: [Field; 161], key_hash: Field) -> (){
-//   recursive(s1, s2, p1, p2, index, prev_index, verification_key, proof, public_inputs, key_hash)
-// }
-	
-fn main(verification_key: [Field; 115], proof: [Field; 93], public_inputs: [Field; 161], key_hash: Field) -> (){
-	std::verify_proof(verification_key, proof, public_inputs, key_hash)
+fn main(
+	dg1: [u8; 0],
+	dg15: [u8; 0],
+	ec: [u8; 310],
+	sa: [u8; 106],
+	pk: [Field; 18],
+	reduction_pk: [Field; 18],
+	sig: [Field; 18],
+	sk_identity: Field,
+	icao_root: Field,
+	inclusion_branches: [Field; 80]) -> pub (Field, Field, Field, Field, Field){
+	let tmp = register_identity::<
+		0,
+		0,
+		310,
+		106,
+		18,
+		0,
+		64,
+		64,
+		3,
+		33,
+		0,
+		42,
+		0,
+		0>(
+	dg1, dg15, ec, sa, pk, reduction_pk, sig, sk_identity, icao_root, inclusion_branches);
+	(tmp.0, tmp.1, tmp.2, tmp.3, icao_root)
 }

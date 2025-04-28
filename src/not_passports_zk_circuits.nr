@@ -212,6 +212,26 @@ fn verify_signature<
             hashed
         );
     }
+    if (SIG_TYPE == 5){
+
+        let mut pk_fixed: [Field; 18] = [0; 18];
+        let mut red_fixed: [Field; 18] = [0; 18];
+        let mut sig_fixed: [Field; 18] = [0; 18];
+
+        for i in 0..18{
+            pk_fixed[i] = pk[i];
+            red_fixed[i] = reduction_pk[i];
+            sig_fixed[i] = sig[i];
+        }
+
+
+        let _ = super::rsa::verify_rsa::<2048, 18, HASH_ALGO, 65537>(
+            pk_fixed, 
+            red_fixed, 
+            sig_fixed, 
+            hashed
+        );
+    }
     if (SIG_TYPE == 10){
         let mut pk_fixed: [Field; 18] = [0; 18];
         let mut red_fixed: [Field; 18] = [0; 18];

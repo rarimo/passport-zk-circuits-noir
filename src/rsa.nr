@@ -72,6 +72,42 @@ pub fn verify_rsa<let N_BITS: u32, let N: u32, let HASH_SIZE: u32, let EXP: u32>
 
     let mut exp_result: [Field; N] = exp::<N_BITS, N, EXP>(modulus, reduction, signature);
 
+    // SHA512 cases
+    // if (HASH_SIZE == 64){
+    //     println(exp_result);
+    //     println(hashed);
+    //     let chunk_1: [u8; 15] = exp_result[0].to_be_bytes();
+    //     for i in 0..15{
+    //         assert(chunk_1[i] == hashed[49 + i], "hui");
+    //     }
+    //     let chunk_2: [u8; 15] = exp_result[1].to_be_bytes();
+    //     for i in 0..15{
+    //         assert(chunk_2[i] == hashed[34 + i], "hui");
+    //     }
+    //     let chunk_3: [u8; 15] = exp_result[2].to_be_bytes();
+    //     for i in 0..15{
+    //         assert(chunk_3[i] == hashed[19 + i], "hui");
+    //     }
+    //     let chunk_4: [u8; 15] = exp_result[3].to_be_bytes();
+    //     for i in 0..15{
+    //         assert(chunk_4[i] == hashed[4 + i], "hui");
+    //     }
+    //     let chunk_5: [u8; 15] = exp_result[4].to_be_bytes();
+    //     for i in 0..5{
+    //         assert(chunk_5[i + 11] == hashed[i], "hui");
+    //     }
+    //     let mut chunk5_remainder = 0;
+    //     let mut current = 1;
+    //     for i in 0..11{
+    //         chunk5_remainder += (chunk_3[i] as Field) * current;
+    //         current *= 8;
+    //     }
+    //     assert(exp_result[3] == 0xffffffffffffffff003031300d0609, "hui");
+    //     for i in 4..(N - 2){
+    //         assert(exp_result[i] == 0xffffffffffffffffffffffffffffff, "hui");
+    //     }
+    // }
+
     // SHA256 cases
     if (HASH_SIZE == 32){
         let chunk_1: [u8; 15] = exp_result[0].to_be_bytes();
@@ -106,8 +142,11 @@ pub fn verify_rsa<let N_BITS: u32, let N: u32, let HASH_SIZE: u32, let EXP: u32>
             assert(exp_result[16] == 0x1ffffffffffffffffffffffffffff, "hui");
             assert(exp_result[17] == 0x00, "hui");
         }
+    }
+
     // SHA1 cases
-    } else {
+    if (HASH_SIZE == 20){
+        
         let chunk_1: [u8; 15] = exp_result[0].to_be_bytes();
         for i in 0..15{
             assert(chunk_1[i] == hashed[5 + i], "hui");
