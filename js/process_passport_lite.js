@@ -62,6 +62,9 @@ function compute_barret_reduction(n_bits, n) {
 //   - 23: ECDSA secp192r1 + SHA1
 
 function getSigType(pk, sig, hashType) {
+  // print(pk);
+  // print(hashType);
+  // print(sig);
   if (sig.salt) {
     // RSA PSS
     if (
@@ -104,6 +107,14 @@ function getSigType(pk, sig, hashType) {
     ) {
       return 14;
     }
+    if (
+      pk.n.length == 512 &&
+      pk.exp == "10001" &&
+      sig.salt == "64" &&
+      hashType == "64"
+    ) {
+      return 15;
+    }
   }
   if (sig.salt == 0) {
     // RSA
@@ -118,6 +129,9 @@ function getSigType(pk, sig, hashType) {
     }
     if (pk.n.length == 512 && pk.exp == "10001" && hashType == "64") {
       return 5;
+    }
+    if (pk.n.length == 768 && pk.exp == "e3dd" && hashType == "20") {
+      return 6;
     }
   }
   if (sig.r) {
@@ -138,7 +152,7 @@ function getSigType(pk, sig, hashType) {
       case "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFE":
         //secp224r1
         return 24;
-
+        
       case "7BC382C63D8C150C3C72080ACE05AFA0C2BEA28E4FB22787139165EFBA91F90F8AA5814A503AD4EB04A8C7DD22CE2826":
         // BrainpoolP384r1
         return 25;
@@ -146,9 +160,14 @@ function getSigType(pk, sig, hashType) {
       case "7830A3318B603B89E2327145AC234CC594CBDD8D3DF91610A83441CAEA9863BC2DED5D5AA8253AA10A2EF1C98B9AC8B57F1117A72BF2C7B9E7C1AC4D77FC94CA":
         //BrainpoolP512r1
         return 26;
-
+        
       case "secp521r1":
         return 27;
+
+      case "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFFFF0000000000000000FFFFFFFC":
+        //Secp384r1
+        return 28;
+      
       default:
         return 0;
     }
@@ -208,9 +227,7 @@ function extract_encapsulated_content(asn1) {
 function getDg1Shift(asn1) {
   const ec = getFirstOctetString(asn1);
   const dg1Hash = ec.sub[0].sub[2].sub[0].sub[1].content.toLowerCase();
-  return (
-    ec.content.toLowerCase().split(dg1Hash)[0].length / 2
-  );
+  return ec.content.toLowerCase().split(dg1Hash)[0].length / 2;
 }
 
 function getDg15Shift(asn1, dg15, dgHashType) {
@@ -414,7 +431,7 @@ function extractFromDg15(dg15) {
       ? "ecdsa"
       : "rsa";
   let aa_sig_type = 0;
-  print(pk_type);
+  // print(pk_type);
   if (pk_type == "ecdsa") {
     let pk_bit = dg15_decoded.sub[0].sub[1].content.slice(8);
     pk = {
@@ -678,12 +695,20 @@ function processPassport(filePath, value) {
       : extract_ecdsa_pubkey(asn1_decoded);
   // get sig algo
   let sigType = getSigType(pk, sig, hash_type);
-  const isSha256 = asn1_decoded.sub[0].sub[1].sub[0]?.sub[4]?.sub[0]?.sub[4]?.sub[0]?.content.toLowerCase().indexOf("sha256") !== -1 ? true : false
-  if (sigType == 5 && isSha256){
+  const isSha256 =
+    asn1_decoded.sub[0].sub[1].sub[0]?.sub[4]?.sub[0]?.sub[4]?.sub[0]?.content
+      .toLowerCase()
+      .indexOf("sha256") !== -1
+      ? true
+      : false;
+  if (sigType == 5 && isSha256) {
     sigType = 3;
   }
 
-  if (sigType == 0) print("UNKNOWN TECHONOLY");
+  if (sigType == 0){
+    print("UNKNOWN TECHONOLY");
+    return("UNKNOWN TECHONOLY");
+  }
 
   // get Shifts
   const dg1_shift = getDg1Shift(asn1_decoded);
@@ -759,4 +784,33 @@ function processPassport(filePath, value) {
   writeToToml(inputs);
 }
 
-processPassport("tmp.csv", 158);
+// For all passports
+function processAll() {
+  for (var i = 0; i < 1000; i++){
+    try {
+      let tmp = processPassport("tmp.csv", i)
+      if (tmp == "UNKNOWN TECHONOLY"){
+        console.log(i, ": UNKNOWN TECHONOLY");
+      }
+    } catch(e){
+      if (e instanceof TypeError && e.message.includes("Cannot read properties of null")) {
+        // No line in file, good
+      } else {
+        if (
+          e instanceof Error &&
+          e.message &&
+          (e.message.includes('"enc" must be a numeric array or a string') ||
+          e.message.includes("Requesting byte offset 1 on a stream of length 1"))
+        ) {
+          console.log(i, ": No sod provided");
+        } else {
+          console.error(`Unknown error at index ${i}:`, e);
+        }
+      }
+    }
+  }
+}
+
+// processAll();
+
+processPassport("tmp.csv", 130);
