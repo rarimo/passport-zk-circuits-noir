@@ -24,7 +24,7 @@ fn smt_hash2(
 fn smt_level_ins<let N_LEVELS: u32>(
     siblings: [Field; N_LEVELS]) -> [Field; N_LEVELS]{
     let mut done: [Field; (N_LEVELS - 1)] = [0; N_LEVELS - 1];
-    assert(siblings[N_LEVELS - 1].eq(0) as Field == 1, "HUI");
+    assert(siblings[N_LEVELS - 1].eq(0) as Field == 1, "SMT inner verification failure");
     let mut out = [0; N_LEVELS];
 
     out[N_LEVELS - 1] = 1 - siblings[N_LEVELS - 2].eq(0) as Field;
