@@ -12,3 +12,4 @@ binary_field_experiments
 test_main.nr
 *.csv
 input_generation/*
+ultraPlonkTrustedSetup.dat
