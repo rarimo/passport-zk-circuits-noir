@@ -13,3 +13,4 @@ test_main.nr
 *.csv
 input_generation/*
 ultraPlonkTrustedSetup.dat
+circuits/*
