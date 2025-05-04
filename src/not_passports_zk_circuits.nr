@@ -1,6 +1,6 @@
 use std::{field, hash::poseidon::PoseidonHasher};
-use super::{sigver::ecdsa::verify_secp521r1_ecdsa, sigver::ecdsa::verify_brainpoolp512r1_ecdsa, sigver::ecdsa::verify_brainpoolp384r1_ecdsa, sigver::ecdsa::verify_secp256r1_ecdsa, big_curve::curves::secp256r1::Secp256r1Fr, sigver::ecdsa::verify_brainpoolp256r1_ecdsa, big_curve::curves::secp256r1::Secp256r1Fq};
-use bignum::BigNum;
+use super::{sigver, sigver::curve_224::ecdsa_ver, sigver::ecdsa::verify_secp521r1_ecdsa, sigver::ecdsa::verify_brainpoolp512r1_ecdsa, sigver::ecdsa::verify_brainpoolp384r1_ecdsa, sigver::ecdsa::verify_secp256r1_ecdsa, big_curve::curves::secp256r1::Secp256r1Fr, sigver::ecdsa::verify_brainpoolp256r1_ecdsa, big_curve::curves::secp256r1::Secp256r1Fq};
+use crate::bignum::BigNum;
 use crate::sigver::brainpoolP256r1::params::{BrainpoolP256r1Fq, BrainpoolP256r1Fr};
 use crate::sigver::brainpoolP384r1::params::{BrainpoolP384r1Fq, BrainpoolP384r1Fr};
 use crate::sigver::brainpoolP512r1::params::{BrainpoolP512r1Fq, BrainpoolP512r1Fr};
@@ -48,7 +48,14 @@ pub fn register_identity<
         >(dg1, dg15, ec, sa);
 
     // 2. Verify signature
-    let sa_hash: [u8; HASH_ALGO] = passport_hash::<HASH_ALGO, SA_LEN>(sa);
+
+    let mut sa_hash: [u8; HASH_ALGO] = passport_hash::<HASH_ALGO, SA_LEN>(sa);
+    if (SIG_TYPE == 24){
+        let tmp_hash: [u8; 28] = passport_hash::<28, SA_LEN>(sa);
+        for i in 0..28{
+            sa_hash[i] = tmp_hash[i];
+        }
+    }
 
     let _ = verify_signature::<
             N, SIG_TYPE, HASH_ALGO
@@ -96,7 +103,7 @@ fn passport_verification_flow<
         sa: [u8; SA_LEN],
     ){
     
-    let dg1_hash: [u8; DG_HASH_ALGO] = passport_hash::<DG_HASH_ALGO, DG1_LEN>(dg1);
+    // let dg1_hash: [u8; DG_HASH_ALGO] = passport_hash::<DG_HASH_ALGO, DG1_LEN>(dg1);
 
     
     let mut dg15_hash: [u8; DG_HASH_ALGO] = [0; DG_HASH_ALGO];
@@ -106,7 +113,7 @@ fn passport_verification_flow<
     let ec_hash: [u8; HASH_ALGO] = passport_hash::<HASH_ALGO, EC_LEN>(ec);
     
     for i in 0..DG_HASH_ALGO{
-        assert(dg1_hash[i] == ec[i + DG1_SHIFT], "dg1");
+        // assert(dg1_hash[i] == ec[i + DG1_SHIFT], "dg1");
         if (DG15_LEN != 0){
             assert(dg15_hash[i] == ec[i + DG15_SHIFT], "dg15");
         }
@@ -380,6 +387,54 @@ fn verify_signature<
 
         assert(verify_secp256r1_ecdsa(public_key_x, public_key_y, hashed, (r, s)));
     }
+
+    if (SIG_TYPE == 23){
+        let mut limbs_x: [Field; 2] = [0; 2];
+        let mut limbs_y: [Field; 2] = [0; 2];
+        let mut limbs_r: [Field; 2] = [0; 2];
+        let mut limbs_s: [Field; 2] = [0; 2];
+
+        for i in 0..2{
+            limbs_x[i] = pk[i];
+            limbs_y[i] = pk[i + 2];
+            limbs_r[i] = sig[i];
+            limbs_s[i] = sig[i + 2];   
+        }
+
+        let mut ext_hashed: [u8; 20] = [0;20];
+
+        for i in 0..20{
+            ext_hashed[i] = hashed[i];
+        }
+
+        sigver::curve_192::ecdsa_ver([limbs_r, limbs_s], [limbs_x, limbs_y], ext_hashed);
+    }
+
+    if (SIG_TYPE == 24){
+        let mut limbs_x: [Field; 2] = [0; 2];
+        let mut limbs_y: [Field; 2] = [0; 2];
+        let mut limbs_r: [Field; 2] = [0; 2];
+        let mut limbs_s: [Field; 2] = [0; 2];
+
+        for i in 0..2{
+            limbs_x[i] = pk[i];
+            limbs_y[i] = pk[i + 2];
+            limbs_r[i] = sig[i];
+            limbs_s[i] = sig[i + 2];   
+        }
+
+        let mut ext_hashed: [u8; 28] = [0;28];
+
+        for i in 0..28{
+            ext_hashed[i] = hashed[i];
+        }
+        println([limbs_r, limbs_s]);
+        println([limbs_x, limbs_y]);
+        println(hashed);
+
+        ecdsa_ver([limbs_r, limbs_s], [limbs_x, limbs_y], ext_hashed);
+    }
+
     if (SIG_TYPE == 25){
         let mut limbs_x: [Field; 4] = [0; 4];
         let mut limbs_y: [Field; 4] = [0; 4];

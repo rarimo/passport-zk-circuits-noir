@@ -3,6 +3,62 @@ const
 
 let decoder;
 
+export class Hex {
+    static #decoder = null; // Private static field
+
+    static #initDecoder() {
+        const hex = '0123456789ABCDEF';
+        const ignore = ' \f\n\r\t\u00A0\u2028\u2029';
+        Hex.#decoder = new Array(0xFFFF);
+        
+        // Initialize uppercase and lowercase
+        for (let i = 0; i < 16; i++) {
+            Hex.#decoder[hex.charCodeAt(i)] = i;
+            Hex.#decoder[hex.toLowerCase().charCodeAt(i)] = i;
+        }
+        
+        // Set ignored characters
+        for (const char of ignore) {
+            Hex.#decoder[char.charCodeAt(0)] = -1;
+        }
+    }
+
+    static decode(a) {
+        if (!Hex.#decoder) Hex.#initDecoder();
+        
+        const isString = typeof a === 'string';
+        const haveU8 = typeof Uint8Array !== 'undefined';
+        let bits = 0;
+        let charCount = 0;
+        const result = [];
+
+        for (let i = 0; i < a.length; i++) {
+            const code = isString ? a.charCodeAt(i) : a[i];
+            const value = Hex.#decoder[code];
+            
+            if (value === -1) continue; // Skip ignored chars
+            if (value === undefined) {
+                throw new Error(`Invalid hex character: ${String.fromCharCode(code)}`);
+            }
+
+            bits = (bits << 4) | value;
+            charCount++;
+            
+            if (charCount === 2) {
+                result.push(bits);
+                bits = charCount = 0;
+            }
+        }
+
+        if (charCount !== 0) {
+            throw new Error("Incomplete hex pair");
+        }
+
+        return haveU8 ? new Uint8Array(result) : result;
+    }
+}
+
+
 export class Base64 {
 
     static decode(a) {

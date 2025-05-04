@@ -1,6 +1,6 @@
-use dep::bignum::BigNum;
-use dep::bignum::fields::secp384r1Fq::Secp384r1_Fq_Params;
-use dep::bignum::fields::secp384r1Fr::Secp384r1_Fr_Params;
+use crate::bignum::BigNum;
+use crate::bignum::fields::secp384r1Fq::Secp384r1_Fq_Params;
+use crate::bignum::fields::secp384r1Fr::Secp384r1_Fr_Params;
 use crate::big_curve::CurveParamsTrait;
 use crate::big_curve::BigCurve;
 use crate::big_curve::scalar_field::ScalarField;

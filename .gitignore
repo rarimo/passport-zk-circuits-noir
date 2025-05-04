@@ -9,3 +9,5 @@ __pycache__
 *.der
 main.nr
 binary_field_experiments
+test_main.nr
+*.csv
