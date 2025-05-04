@@ -68,7 +68,7 @@ pub fn register_identity<
     let leaf = extract_pk_hash::<N, EC_FIELD_SIZE, SIG_TYPE>(pk);
     let key  = leaf;
     let is_verfied = super::smt::smt_verifier::<80>(icao_root, leaf, key, inclusion_brances);
-    assert(is_verfied == 1, "HUI");
+    assert(is_verfied == 1, "Merkle tree verification failure");
 
     // 4. Get dg15 pubkey hash
     let dg15_pk_hash = extract_dg15_pk_hash::<DG15_LEN, AA_SHIFT, AA_SIG_TYPE>(dg15);
@@ -113,14 +113,14 @@ fn passport_verification_flow<
     let ec_hash: [u8; HASH_ALGO] = passport_hash::<HASH_ALGO, EC_LEN>(ec);
     
     for i in 0..DG_HASH_ALGO{
-        // assert(dg1_hash[i] == ec[i + DG1_SHIFT], "dg1");
+        // assert(dg1_hash[i] == ec[i + DG1_SHIFT], "dg1 mismatch");
         if (DG15_LEN != 0){
-            assert(dg15_hash[i] == ec[i + DG15_SHIFT], "dg15");
+            assert(dg15_hash[i] == ec[i + DG15_SHIFT], "dg15 mismatch");
         }
     }
 
     for i in 0..HASH_ALGO{
-        assert(ec_hash[i] == sa[i + EC_SHIFT], "ec");
+        assert(ec_hash[i] == sa[i + EC_SHIFT], "ec mismatch");
     }
 }
 
@@ -206,6 +206,46 @@ fn verify_signature<
 
 
         let _ = super::rsa::verify_rsa::<2048, 18, HASH_ALGO, 37187>(
+            pk_fixed, 
+            red_fixed, 
+            sig_fixed, 
+            hashed
+        );
+    }
+    if (SIG_TYPE == 5){
+
+        let mut pk_fixed: [Field; 18] = [0; 18];
+        let mut red_fixed: [Field; 18] = [0; 18];
+        let mut sig_fixed: [Field; 18] = [0; 18];
+
+        for i in 0..18{
+            pk_fixed[i] = pk[i];
+            red_fixed[i] = reduction_pk[i];
+            sig_fixed[i] = sig[i];
+        }
+
+
+        let _ = super::rsa::verify_rsa::<2048, 18, HASH_ALGO, 65537>(
+            pk_fixed, 
+            red_fixed, 
+            sig_fixed, 
+            hashed
+        );
+    }
+    if (SIG_TYPE == 6){
+
+        let mut pk_fixed: [Field; 26] = [0; 26];
+        let mut red_fixed: [Field; 26] = [0; 26];
+        let mut sig_fixed: [Field; 26] = [0; 26];
+
+        for i in 0..26{
+            pk_fixed[i] = pk[i];
+            red_fixed[i] = reduction_pk[i];
+            sig_fixed[i] = sig[i];
+        }
+
+
+        let _ = super::rsa::verify_rsa::<3072, 26, HASH_ALGO, 58333>(
             pk_fixed, 
             red_fixed, 
             sig_fixed, 
