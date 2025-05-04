@@ -1,4 +1,4 @@
-use bignum::{params, bignum::BigNum, RuntimeBigNum, params::BigNumParams};
+use crate::bignum::{params, bignum::BigNum, RuntimeBigNum, params::BigNumParams};
 
 
 pub fn exp<let N_BITS: u32, let N: u32, let EXP: u32>(modulus: [Field; N], reduction: [Field; N], x: [Field; N]) -> [Field;N]{

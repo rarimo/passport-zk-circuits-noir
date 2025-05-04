@@ -3,8 +3,8 @@ pub(crate) mod curve_jac;
 pub(crate) mod utils;
 pub mod curves;
 
-use dep::bignum::BigNum;
-use dep::bignum::BigNumTrait;
+use crate::bignum::BigNum;
+use crate::bignum::BigNumTrait;
 
 use super::big_curve::scalar_field::ScalarField;
 use super::big_curve::curve_jac::AffineTranscript;

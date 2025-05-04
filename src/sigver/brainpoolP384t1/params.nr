@@ -1,6 +1,6 @@
-use bignum::params::BigNumParams;
-use bignum::params::BigNumParamsGetter;
-use bignum::bignum::BigNum;
+use crate::bignum::params::BigNumParams;
+use crate::bignum::params::BigNumParamsGetter;
+use crate::bignum::bignum::BigNum;
 
 pub struct BrainpoolP384t1_Fq_Params {}
 

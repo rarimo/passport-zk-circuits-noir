@@ -1,5 +1,5 @@
-use bignum::BigNumTrait;
-use bignum::bignum::BigNum;
+use crate::bignum::BigNumTrait;
+use crate::bignum::bignum::BigNum;
 use crate::big_curve::CurveParamsTrait;
 use crate::big_curve::BigCurve;
 use crate::big_curve::curve_jac::CurveJ;
@@ -7,7 +7,7 @@ use crate::big_curve::curve_jac::CurveJ;
 use crate::sigver::secp521r1::params::Secp521r1_Fq_Params;
 use crate::sigver::secp521r1::curve::Secp521r1_Params;
 
-use bignum::fields::secp384r1Fq::Secp384r1_Fq_Params;
+use crate::bignum::fields::secp384r1Fq::Secp384r1_Fq_Params;
 
 use crate::sigver::brainpoolP256r1::params::BrainpoolP256r1_Fq_Params;
 use crate::sigver::brainpoolP256r1::curve::BrainpoolP256r1_Params;

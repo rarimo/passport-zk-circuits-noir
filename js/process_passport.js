@@ -1,5 +1,5 @@
 
-import {decoded, Base64} from "./asn1.js"
+import {decoded, Base64, Hex} from "./asn1.js"
 import { poseidon } from "./poseidon.js";
 import fs from 'fs';
 import { createHash } from 'crypto';
@@ -103,7 +103,11 @@ function getSigType(pk, sig, hashType){
             case "FFFFFFFF00000001000000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFC":
                 // Secp256r1
                 return 20
-        
+            
+            case "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFE":
+                //secp224r1
+                return 24
+            
             case "7BC382C63D8C150C3C72080ACE05AFA0C2BEA28E4FB22787139165EFBA91F90F8AA5814A503AD4EB04A8C7DD22CE2826":
                 // BrainpoolP384r1
                 return 25
@@ -353,7 +357,7 @@ function extractFromDg15(dg15){
     let aa_shift = 0;
     let pk_type = dg15_decoded.sub[0].sub[1].content.slice(0,8) == "00000100" ? "ecdsa" : "rsa"
     let aa_sig_type = 0;
-
+    print(pk_type);
     if (pk_type == "ecdsa"){
         let pk_bit = dg15_decoded.sub[0].sub[1].content.slice(8)
         pk = {
@@ -402,16 +406,17 @@ function extractFromDg15(dg15){
             exp: exp
         }
         
-        if (BigInt(pk.n).toString(16).length == 384){
-            aa_sig_type = 3;
-        }
-        if (BigInt(pk.n).toString(16).length == 256){
-            if (pk.exp.toString() == "3"){
-                aa_sig_type = 2;
-            } else {
-                aa_sig_type = 1;
-            }
-        }
+        // if (BigInt(pk.n).toString(16).length == 384){
+        //     aa_sig_type = 3;
+        // }
+        // if (BigInt(pk.n).toString(16).length == 256){
+        //     if (pk.exp.toString() == "3"){
+        //         aa_sig_type = 2;
+        //     } else {
+        //         aa_sig_type = 1;
+        //     }
+        // }
+        aa_sig_type = 1;
         aa_shift = dg15_decoded.dump.split(BigInt(pk.n).toString(16).toUpperCase())[0].length / 2
     }
     
@@ -456,15 +461,22 @@ function getFakeIdenData(ec, pk){
     return [sk_iden, root, branches]
 }
 
-function writeToNoir(inputs, params, name){
-    const res_str = `//${name}\npub mod sigver;\npub mod big_curve;\npub mod rsa;\npub mod sha1;\npub mod sha224;\npub mod sha384;\npub mod rsa_pss;\npub mod jubjub;\npub mod smt;\npub mod utils;\nmod not_passports_zk_circuits;\nuse not_passports_zk_circuits::register_identity;\n\nfn main(\n\tdg1: [u8; ${params.dg1_len}],\n\tdg15: [u8; ${params.dg15_len}],\n\tec: [u8; ${params.ec_len}],\n\tsa: [u8; ${params.sa_len}],\n\tpk: [Field; ${params.n}],\n\treduction_pk: [Field; ${params.n}],\n\tsig: [Field; ${params.n}],\n\tsk_identity: Field,\n\ticao_root: Field,\n\tinclusion_branches: [Field; 80]) -> pub (Field, Field, Field, Field, Field){\n\tlet tmp = register_identity::<\n\t\t${params.dg1_len},\n\t\t${params.dg15_len},\n\t\t${params.ec_len},\n\t\t${params.sa_len},\n\t\t${params.n},\n\t\t${params.ec_field_size},\n\t\t${params.dg_hash_type},\n\t\t${params.hash_type},\n\t\t${params.sig_type},\n\t\t${params.dg1_shift},\n\t\t${params.dg15_shift},\n\t\t${params.ec_shift},\n\t\t${params.aa_sig_type},\n\t\t${params.aa_shift}>(\n\tdg1, dg15, ec, sa, pk, reduction_pk, sig, sk_identity, icao_root, inclusion_branches);\n\t(tmp.0, tmp.1, tmp.2, tmp.3, icao_root)\n}\n\n#[test]\nfn test_main(){\n\tprintln(main(\n\t\t${inputs.dg1},\n\t\t${inputs.dg15},\n\t\t${inputs.ec},\n\t\t${inputs.sa},\n\t\t${inputs.pk},\n\t\t${inputs.reduction},\n\t\t${inputs.sig},\n\t\t${inputs.sk_identity},\n\t\t${inputs.icao_root},\n\t\t${inputs.inclusion_branches}))\n}`
+function writeMainToNoir(inputs, params, name){
+    const res_str = `//${name}\npub mod bignum;\npub mod test_main;\npub mod sigver;\npub mod big_curve;\npub mod rsa;\npub mod sha1;\npub mod sha224;\npub mod sha384;\npub mod rsa_pss;\npub mod jubjub;\npub mod smt;\npub mod utils;\nmod not_passports_zk_circuits;\nuse not_passports_zk_circuits::register_identity;\n\nfn main(\n\tdg1: [u8; ${params.dg1_len}],\n\tdg15: [u8; ${params.dg15_len}],\n\tec: [u8; ${params.ec_len}],\n\tsa: [u8; ${params.sa_len}],\n\tpk: [Field; ${params.n}],\n\treduction_pk: [Field; ${params.n}],\n\tsig: [Field; ${params.n}],\n\tsk_identity: Field,\n\ticao_root: Field,\n\tinclusion_branches: [Field; 80]) -> pub (Field, Field, Field, Field, Field){\n\tlet tmp = register_identity::<\n\t\t${params.dg1_len},\n\t\t${params.dg15_len},\n\t\t${params.ec_len},\n\t\t${params.sa_len},\n\t\t${params.n},\n\t\t${params.ec_field_size},\n\t\t${params.dg_hash_type},\n\t\t${params.hash_type},\n\t\t${params.sig_type},\n\t\t${params.dg1_shift},\n\t\t${params.dg15_shift},\n\t\t${params.ec_shift},\n\t\t${params.aa_sig_type},\n\t\t${params.aa_shift}>(\n\tdg1, dg15, ec, sa, pk, reduction_pk, sig, sk_identity, icao_root, inclusion_branches);\n\t(tmp.0, tmp.1, tmp.2, tmp.3, icao_root)\n}`
     fs.writeFile("../src/main.nr", res_str, "utf-8", Error);
 }
+
+function writeTestToNoir(inputs, params, name){
+    const res_str = `//${name}\nuse super::main;\n\n#[test]\nfn test_main(){\n\tprintln(main(\n\t\t${inputs.dg1},\n\t\t${inputs.dg15},\n\t\t${inputs.ec},\n\t\t${inputs.sa},\n\t\t${inputs.pk},\n\t\t${inputs.reduction},\n\t\t${inputs.sig},\n\t\t${inputs.sk_identity},\n\t\t${inputs.icao_root},\n\t\t${inputs.inclusion_branches}))\n}`
+    fs.writeFile("../src/test_main.nr", res_str, "utf-8", Error);
+}
+
 
 function writeToToml(inputs){
     const res_str = `dg1=${inputs.dg1}\ndg15=${inputs.dg15}\nec=${inputs.ec}\nicao_root="${inputs.icao_root}"\ninclusion_branches=${inputs.inclusion_branches}\npk=${inputs.pk}\nreduction_pk=${inputs.reduction}\nsa=${inputs.sa}\nsig=${inputs.sig}\nsk_identity="${inputs.sk_identity}"`.replaceAll(",", `","`).replaceAll("[", `["`).replaceAll("]", `"]`).replace(`dg15=[""]`, "dg15=[]")
     fs.writeFile("../Prover.toml", res_str, "utf-8", Error);
 }
+
 function processPassport(filePath){
     // Extract json data
     const json = readJsonFileSync(filePath)
@@ -537,7 +549,8 @@ function processPassport(filePath){
     }
 
     const old_naming_convention = `registerIdentity_${compile_params.sig_type}_${dg_hash_type * 8}_${dg1_bytes.length == 93 ? 3 : 1}_${hash_type <= 32? Math.ceil((ec_bytes.length +8)/ 64) : Math.ceil((ec_bytes.length +8) / 128)}_${ec_shift*8}_${dg1_shift*8}_${dg15_bytes.length == 0? "NA" : (aa_sig_type) + "_" + dg15_shift * 8 + "_" + (dg_hash_type <= 32? Math.ceil((dg15_bytes.length + 8) / 64) : Math.ceil((dg15_bytes.length + 8) / 128)) + "_" + aa_shift * 8}`
-    writeToNoir(inputs, compile_params, old_naming_convention);
+    writeMainToNoir(inputs, compile_params, old_naming_convention);
+    writeTestToNoir(inputs, compile_params, old_naming_convention);
     writeToToml(inputs);
 
 

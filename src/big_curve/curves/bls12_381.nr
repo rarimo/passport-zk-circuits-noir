@@ -1,6 +1,6 @@
-use dep::bignum::BigNum;
-use dep::bignum::fields::bls12_381Fq::BLS12_381_Fq_Params;
-use dep::bignum::fields::bls12_381Fr::BLS12_381_Fr_Params;
+use crate::bignum::BigNum;
+use crate::bignum::fields::bls12_381Fq::BLS12_381_Fq_Params;
+use crate::bignum::fields::bls12_381Fr::BLS12_381_Fr_Params;
 use crate::big_curve::CurveParamsTrait;
 use crate::big_curve::BigCurve;
 use crate::big_curve::scalar_field::ScalarField;

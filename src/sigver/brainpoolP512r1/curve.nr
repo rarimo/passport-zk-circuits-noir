@@ -1,4 +1,4 @@
-use bignum::BigNum;
+use crate::bignum::BigNum;
 use super::params::BrainpoolP512r1_Fq_Params;
 use crate::big_curve::CurveParamsTrait;
 
