@@ -62,9 +62,6 @@ function compute_barret_reduction(n_bits, n) {
 //   - 23: ECDSA secp192r1 + SHA1
 
 function getSigType(pk, sig, hashType) {
-  // print(pk);
-  // print(hashType);
-  // print(sig);
   if (sig.salt) {
     // RSA PSS
     if (
@@ -167,7 +164,7 @@ function getSigType(pk, sig, hashType) {
       case "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFFFF0000000000000000FFFFFFFC":
         //Secp384r1
         return 28;
-      
+
       default:
         return 0;
     }
@@ -431,7 +428,7 @@ function extractFromDg15(dg15) {
       ? "ecdsa"
       : "rsa";
   let aa_sig_type = 0;
-  // print(pk_type);
+
   if (pk_type == "ecdsa") {
     let pk_bit = dg15_decoded.sub[0].sub[1].content.slice(8);
     pk = {
