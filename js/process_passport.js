@@ -556,4 +556,4 @@ function processPassport(filePath){
 
 }
 
-processPassport("passport.json");
+processPassport("germ.json");

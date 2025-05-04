@@ -1,5 +1,5 @@
 use std::hash::poseidon::PoseidonHasher;
-use super::utils::{is_zero, switcher};
+use super::utils::{switcher};
 
 fn smt_hash1(
     key: Field,
@@ -24,16 +24,16 @@ fn smt_hash2(
 fn smt_level_ins<let N_LEVELS: u32>(
     siblings: [Field; N_LEVELS]) -> [Field; N_LEVELS]{
     let mut done: [Field; (N_LEVELS - 1)] = [0; N_LEVELS - 1];
-    assert(is_zero(siblings[N_LEVELS - 1]) == 1, "HUI");
+    assert(siblings[N_LEVELS - 1].eq(0) as Field == 1, "SMT inner verification failure");
     let mut out = [0; N_LEVELS];
 
-    out[N_LEVELS - 1] = 1 - is_zero(siblings[N_LEVELS - 2]);
+    out[N_LEVELS - 1] = 1 - siblings[N_LEVELS - 2].eq(0) as Field;
     done[N_LEVELS - 2] = out[N_LEVELS - 1];
 
     for i in 0..N_LEVELS - 2{
         out[N_LEVELS - 2 - i] = 
             (1 - done[N_LEVELS - 2 - i]) * 
-            (1 - is_zero(siblings[N_LEVELS - 3 - i]));
+            (1 - siblings[N_LEVELS - 3 - i].eq(0) as Field);
         done[N_LEVELS - 3 - i] = 
             out[N_LEVELS - 2 - i] + done[N_LEVELS - 2 - i];
     }

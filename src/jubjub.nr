@@ -1,5 +1,3 @@
-use super::utils::is_zero;
-
 pub fn priv_to_pub(priv: Field) -> (Field, Field){
     let base_x = 5299619240641551281634865583518297030282874472190772894086521144482721001553;
     let base_y = 16950150798460657717958625567821834550301663161624707787222815936182638968203;
@@ -61,8 +59,8 @@ pub fn add_zero(x1: Field, y1: Field, x2: Field, y2: Field) -> (Field, Field){
     
     let y = (delta + a * beta - gamma) / (1 - d * tau);
 
-    let is_zero_x = is_zero(x);
-    let is_zero_y = is_zero(y);
+    let is_zero_x = x.eq(0) as Field;
+    let is_zero_y = y.eq(0) as Field;
     (x + is_zero_x * (x1 + x2), y + is_zero_y * (y1 + y2))
 }
 
@@ -121,13 +119,6 @@ fn test_add_zero(){
     0,
     0,
     ));
-}
-
-#[test]
-fn test_is_zero(){
-    println(is_zero(0));
-    println(is_zero(1));
-    println(is_zero(0-1));
 }
 
 #[test]

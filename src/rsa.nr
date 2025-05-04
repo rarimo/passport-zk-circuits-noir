@@ -10,6 +10,9 @@ pub fn exp<let N_BITS: u32, let N: u32, let EXP: u32>(modulus: [Field; N], reduc
     if (EXP == 37187){
         exp_result = exp_37187::<N_BITS, N>(modulus, reduction, x);
     }
+    if (EXP == 58333){
+        exp_result = exp_58333::<N_BITS, N>(modulus, reduction, x);
+    }
     if (EXP == 3){
         exp_result = exp_3::<N_BITS, N>(modulus, reduction, x);
     }
@@ -54,7 +57,31 @@ fn exp_37187<let N_BITS: u32, let N: u32>(modulus: [Field; N], reduction: [Field
 
     let mut exp: u32 = 37187;
     
-    for i in 0..15{
+    for _ in 0..15{
+        if exp % 2 == 1{
+            res *= x_big;
+        }
+        x_big *= x_big;
+
+        exp /= 2;
+    }
+    res *= x_big;
+
+
+    res.get_limbs()
+}
+
+fn exp_58333<let N_BITS: u32, let N: u32>(modulus: [Field; N], reduction: [Field; N], x: [Field; N]) -> [Field;N]{
+    let params: BigNumParams<N, N_BITS> = BigNumParams::new(false,
+        modulus,
+        reduction
+    );
+    let mut res= RuntimeBigNum::one(params);
+    let mut x_big: RuntimeBigNum<N, N_BITS> = RuntimeBigNum::from_array(params, x);
+
+    let mut exp: u32 = 58333;
+    
+    for _ in 0..15{
         if exp % 2 == 1{
             res *= x_big;
         }
@@ -71,6 +98,42 @@ fn exp_37187<let N_BITS: u32, let N: u32>(modulus: [Field; N], reduction: [Field
 pub fn verify_rsa<let N_BITS: u32, let N: u32, let HASH_SIZE: u32, let EXP: u32>(modulus: [Field; N], reduction: [Field; N], signature: [Field; N], hashed: [u8; HASH_SIZE]){
 
     let mut exp_result: [Field; N] = exp::<N_BITS, N, EXP>(modulus, reduction, signature);
+
+    // SHA512 cases
+    // if (HASH_SIZE == 64){
+    //     println(exp_result);
+    //     println(hashed);
+    //     let chunk_1: [u8; 15] = exp_result[0].to_be_bytes();
+    //     for i in 0..15{
+    //         assert(chunk_1[i] == hashed[49 + i], "hui");
+    //     }
+    //     let chunk_2: [u8; 15] = exp_result[1].to_be_bytes();
+    //     for i in 0..15{
+    //         assert(chunk_2[i] == hashed[34 + i], "hui");
+    //     }
+    //     let chunk_3: [u8; 15] = exp_result[2].to_be_bytes();
+    //     for i in 0..15{
+    //         assert(chunk_3[i] == hashed[19 + i], "hui");
+    //     }
+    //     let chunk_4: [u8; 15] = exp_result[3].to_be_bytes();
+    //     for i in 0..15{
+    //         assert(chunk_4[i] == hashed[4 + i], "hui");
+    //     }
+    //     let chunk_5: [u8; 15] = exp_result[4].to_be_bytes();
+    //     for i in 0..5{
+    //         assert(chunk_5[i + 11] == hashed[i], "hui");
+    //     }
+    //     let mut chunk5_remainder = 0;
+    //     let mut current = 1;
+    //     for i in 0..11{
+    //         chunk5_remainder += (chunk_3[i] as Field) * current;
+    //         current *= 8;
+    //     }
+    //     assert(exp_result[3] == 0xffffffffffffffff003031300d0609, "hui");
+    //     for i in 4..(N - 2){
+    //         assert(exp_result[i] == 0xffffffffffffffffffffffffffffff, "hui");
+    //     }
+    // }
 
     // SHA256 cases
     if (HASH_SIZE == 32){
@@ -106,8 +169,11 @@ pub fn verify_rsa<let N_BITS: u32, let N: u32, let HASH_SIZE: u32, let EXP: u32>
             assert(exp_result[16] == 0x1ffffffffffffffffffffffffffff, "hui");
             assert(exp_result[17] == 0x00, "hui");
         }
+    }
+
     // SHA1 cases
-    } else {
+    if (HASH_SIZE == 20){
+        
         let chunk_1: [u8; 15] = exp_result[0].to_be_bytes();
         for i in 0..15{
             assert(chunk_1[i] == hashed[5 + i], "hui");
