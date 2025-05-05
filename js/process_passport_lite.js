@@ -4,6 +4,11 @@ import fs from "fs";
 import { createHash } from "crypto";
 import path from "path";
 
+import { appendFile, readFile } from 'fs/promises';
+import { exec } from "child_process";
+import { promisify } from "util";
+const execAsync = promisify(exec);
+
 const reHex = /^\s*(?:[0-9A-Fa-f][0-9A-Fa-f]\s*)+$/;
 function print(x) {
   console.log(x);
@@ -286,7 +291,6 @@ function getZero(asn1) {
 
 function extract_signed_atributes(asn1) {
   let sa = getZero(asn1);
-
   const hashType = sa.sub.slice(-1)[0].sub.slice(-1)[0].sub[0].length;
 
   return ["31" + sa.dump.slice(2), hashType];
@@ -428,7 +432,11 @@ function extractFromDg15(dg15) {
       ? "ecdsa"
       : "rsa";
   let aa_sig_type = 0;
+<<<<<<< Updated upstream
 
+=======
+  print(pk_type);
+>>>>>>> Stashed changes
   if (pk_type == "ecdsa") {
     let pk_bit = dg15_decoded.sub[0].sub[1].content.slice(8);
     pk = {
@@ -438,7 +446,7 @@ function extractFromDg15(dg15) {
     const p = BigInt(dg15_decoded.sub[0].sub[0].sub[1].sub[4].content)
       .toString(16)
       .toLocaleUpperCase();
-
+    print(p);
     switch (p) {
       case "A9FB57DBA1EEA9BC3E660A909D838D718C397AA3B561A6F7901E0E82974856A7": {
         // brainpoolP256r1
@@ -450,7 +458,7 @@ function extractFromDg15(dg15) {
         aa_sig_type = 20;
         break;
       }
-      case "D35E472036BC4FB7E13C785ED201E065F98FCFA6F6F40DEF4F92B9EC7893EC28FCD412B1F1B32E27": {
+      case "D35E472036BC4FB7E13C785ED201E065F98FCFA5B68F12A32D482EC7EE8658E98691555B44C59311": {
         // brainpool320r1
         aa_sig_type = 22;
         break;
@@ -779,16 +787,37 @@ function processPassport(filePath, value) {
   writeMainToNoir(inputs, compile_params, old_naming_convention);
   writeTestToNoir(inputs, compile_params, old_naming_convention);
   writeToToml(inputs);
+
+  return old_naming_convention;
 }
 
 // For all passports
-function processAll() {
+
+async function processAll() {
   for (var i = 0; i < 1000; i++){
     try {
       let tmp = processPassport("tmp.csv", i)
       if (tmp == "UNKNOWN TECHONOLY"){
         console.log(i, ": UNKNOWN TECHONOLY");
       }
+      const cmd = 'cd .. && nargo test --show-output --exact test_main::test_main';
+      
+      try {
+        // const { stdout, stderr } = await execAsync(cmd);
+        // const output = stdout + stderr;
+        
+        // Save last 10 lines
+        // const lines = output.split('\n');
+        // const last5 = lines.slice(-5).join('\n');
+        const last5 = ""
+        await appendFile('logs.txt', 
+          `=== Test ${i}: ${tmp} ===\n${last5}\n\n`);
+        
+      } catch (testError) {
+        await appendFile('logs.txt', 
+          `=== Test ${i}: ${tmp} ERROR ===\n`);
+      }
+
     } catch(e){
       if (e instanceof TypeError && e.message.includes("Cannot read properties of null")) {
         // No line in file, good
@@ -808,6 +837,7 @@ function processAll() {
   }
 }
 
+
 // processAll();
 
-processPassport("tmp.csv", 130);
+processPassport("tmp.csv", 110);

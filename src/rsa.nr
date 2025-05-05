@@ -99,55 +99,19 @@ pub fn verify_rsa<let N_BITS: u32, let N: u32, let HASH_SIZE: u32, let EXP: u32>
 
     let mut exp_result: [Field; N] = exp::<N_BITS, N, EXP>(modulus, reduction, signature);
 
-    // SHA512 cases
-    // if (HASH_SIZE == 64){
-    //     println(exp_result);
-    //     println(hashed);
-    //     let chunk_1: [u8; 15] = exp_result[0].to_be_bytes();
-    //     for i in 0..15{
-    //         assert(chunk_1[i] == hashed[49 + i], "hui");
-    //     }
-    //     let chunk_2: [u8; 15] = exp_result[1].to_be_bytes();
-    //     for i in 0..15{
-    //         assert(chunk_2[i] == hashed[34 + i], "hui");
-    //     }
-    //     let chunk_3: [u8; 15] = exp_result[2].to_be_bytes();
-    //     for i in 0..15{
-    //         assert(chunk_3[i] == hashed[19 + i], "hui");
-    //     }
-    //     let chunk_4: [u8; 15] = exp_result[3].to_be_bytes();
-    //     for i in 0..15{
-    //         assert(chunk_4[i] == hashed[4 + i], "hui");
-    //     }
-    //     let chunk_5: [u8; 15] = exp_result[4].to_be_bytes();
-    //     for i in 0..5{
-    //         assert(chunk_5[i + 11] == hashed[i], "hui");
-    //     }
-    //     let mut chunk5_remainder = 0;
-    //     let mut current = 1;
-    //     for i in 0..11{
-    //         chunk5_remainder += (chunk_3[i] as Field) * current;
-    //         current *= 8;
-    //     }
-    //     assert(exp_result[3] == 0xffffffffffffffff003031300d0609, "hui");
-    //     for i in 4..(N - 2){
-    //         assert(exp_result[i] == 0xffffffffffffffffffffffffffffff, "hui");
-    //     }
-    // }
-
     // SHA256 cases
     if (HASH_SIZE == 32){
         let chunk_1: [u8; 15] = exp_result[0].to_be_bytes();
         for i in 0..15{
-            assert(chunk_1[i] == hashed[17 + i], "hui");
+            assert(chunk_1[i] == hashed[17 + i], "pcsv padding failure");
         }
         let chunk_2: [u8; 15] = exp_result[1].to_be_bytes();
         for i in 0..15{
-            assert(chunk_2[i] == hashed[2 + i], "hui");
+            assert(chunk_2[i] == hashed[2 + i], "pcsv padding failure");
         }
         let chunk_3: [u8; 15] = exp_result[2].to_be_bytes();
         for i in 0..2{
-            assert(chunk_3[i + 13] == hashed[i], "hui");
+            assert(chunk_3[i + 13] == hashed[i], "pcsv padding failure");
         }
         let mut chunk3_remainder = 0;
         let mut current = 1;
@@ -155,19 +119,19 @@ pub fn verify_rsa<let N_BITS: u32, let N: u32, let HASH_SIZE: u32, let EXP: u32>
             chunk3_remainder += (chunk_3[i] as Field) * current;
             current *= 8;
         }
-        assert(exp_result[3] == 0xffffffffffffffff003031300d0609, "hui");
+        assert(exp_result[3] == 0xffffffffffffffff003031300d0609, "pcsv padding failure");
         for i in 4..(N - 2){
-            assert(exp_result[i] == 0xffffffffffffffffffffffffffffff, "hui");
+            assert(exp_result[i] == 0xffffffffffffffffffffffffffffff, "pcsv padding failure");
         }
         // RSA4096 with SHA256
         if (N == 35){
-            assert(exp_result[33] == 0xffffffffffffffffffffffffffffff, "hui");
-            assert(exp_result[34] == 0x01, "hui");
+            assert(exp_result[33] == 0xffffffffffffffffffffffffffffff, "pcsv padding failure");
+            assert(exp_result[34] == 0x01, "pcsv padding failure");
         }
         // RSA2048 with SHA256
         if (N == 18){
-            assert(exp_result[16] == 0x1ffffffffffffffffffffffffffff, "hui");
-            assert(exp_result[17] == 0x00, "hui");
+            assert(exp_result[16] == 0x1ffffffffffffffffffffffffffff, "pcsv padding failure");
+            assert(exp_result[17] == 0x00, "pcsv padding failure");
         }
     }
 
@@ -176,11 +140,11 @@ pub fn verify_rsa<let N_BITS: u32, let N: u32, let HASH_SIZE: u32, let EXP: u32>
         
         let chunk_1: [u8; 15] = exp_result[0].to_be_bytes();
         for i in 0..15{
-            assert(chunk_1[i] == hashed[5 + i], "hui");
+            assert(chunk_1[i] == hashed[5 + i], "pcsv padding failure");
         }
         let chunk_2: [u8; 15] = exp_result[1].to_be_bytes();
         for i in 0..5{
-            assert(chunk_2[i + 10] == hashed[i], "hui");
+            assert(chunk_2[i + 10] == hashed[i], "pcsv padding failure");
         }
         let mut chunk2_remainder = 0;
 
@@ -189,21 +153,21 @@ pub fn verify_rsa<let N_BITS: u32, let N: u32, let HASH_SIZE: u32, let EXP: u32>
             chunk2_remainder += (chunk_2[i] as Field) * current;
             current *= 8;
         }
-        assert(chunk2_remainder == 0xa4212add, "hui");
-        assert(exp_result[2] == 0xffffffffffffffffff003021300906, "hui");
+        assert(chunk2_remainder == 0xa4212add, "pcsv padding failure");
+        assert(exp_result[2] == 0xffffffffffffffffff003021300906, "pcsv padding failure");
 
         for i in 3..(N - 2){
-            assert(exp_result[i] == 0xffffffffffffffffffffffffffffff, "hui");
+            assert(exp_result[i] == 0xffffffffffffffffffffffffffffff, "pcsv padding failure");
         }
         // RSA3072 with SHA1
         if (N == 26){
-            assert(exp_result[N - 2] == 0xffffffffffffffffffffffffffffff, "hui");
-            assert(exp_result[N - 1] == 0x1ffffffffffffff, "hui");
+            assert(exp_result[N - 2] == 0xffffffffffffffffffffffffffffff, "pcsv padding failure");
+            assert(exp_result[N - 1] == 0x1ffffffffffffff, "pcsv padding failure");
         }
         // RSA2048 with SHA1
         if (N == 18){
-            assert(exp_result[N - 2] == 0x1ffffffffffffffffffffffffffff, "hui");
-            assert(exp_result[N - 1] == 0x00, "hui");
+            assert(exp_result[N - 2] == 0x1ffffffffffffffffffffffffffff, "pcsv padding failure");
+            assert(exp_result[N - 1] == 0x00, "pcsv padding failure");
         }
 
     }
