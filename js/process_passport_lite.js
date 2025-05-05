@@ -137,7 +137,6 @@ function getSigType(pk, sig, hashType) {
     }
   }
   if (sig.r) {
-    // print(pk.param);
     switch (pk.param) {
       case "7D5A0975FC2C3057EEF67530417AFFE7FB8055C126DC5C6CE94A4B44F330B5D9":
         // BrainpoolP256r1
