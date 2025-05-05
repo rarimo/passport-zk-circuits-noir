@@ -814,7 +814,7 @@ fn u8_to_8_u1(x:u8) -> [u1; 8]{
             (out[4] as u8) * 8 +
             (out[5] as u8) * 4 + 
             (out[6] as u8) * 2 +
-            (out[7] as u8) == x, "hui");
+            (out[7] as u8) == x, "byte to bits conversion");
     out
 }
 
