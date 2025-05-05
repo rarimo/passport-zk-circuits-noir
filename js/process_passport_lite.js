@@ -432,11 +432,7 @@ function extractFromDg15(dg15) {
       ? "ecdsa"
       : "rsa";
   let aa_sig_type = 0;
-<<<<<<< Updated upstream
-
-=======
-  print(pk_type);
->>>>>>> Stashed changes
+  // print(pk_type);
   if (pk_type == "ecdsa") {
     let pk_bit = dg15_decoded.sub[0].sub[1].content.slice(8);
     pk = {
@@ -468,6 +464,13 @@ function extractFromDg15(dg15) {
         aa_sig_type = 23;
         break;
       }
+
+      case "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFC7634D81F4372DDF581A0DB248B0A77AECEC196ACCC52973": {
+        // secp384r1
+        aa_sig_type = 24;
+        break; 
+      }
+
       default:
         aa_sig_type = "unknown tech!";
     }
@@ -840,4 +843,4 @@ async function processAll() {
 
 // processAll();
 
-processPassport("tmp.csv", 110);
+processPassport("tmp.csv", 201);

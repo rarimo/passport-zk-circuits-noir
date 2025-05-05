@@ -1,9 +1,4 @@
-<<<<<<< Updated upstream
-//registerIdentity_6_160_3_3_336_216_1_1080_3_256
-
-=======
 //registerIdentity_2_256_3_4_336_248_22_1496_7_2408
->>>>>>> Stashed changes
 pub mod bignum;
 pub mod test_main;
 pub mod sigver;
