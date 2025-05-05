@@ -1,5 +1,4 @@
-//registerIdentity_6_160_3_3_336_216_1_1080_3_256
-
+//registerIdentity_2_256_3_4_336_248_22_1496_7_2408
 pub mod bignum;
 pub mod test_main;
 pub mod sigver;
@@ -17,30 +16,30 @@ use not_passports_zk_circuits::register_identity;
 
 fn main(
 	dg1: [u8; 0],
-	dg15: [u8; 165],
-	ec: [u8; 155],
-	sa: [u8; 62],
-	pk: [Field; 26],
-	reduction_pk: [Field; 26],
-	sig: [Field; 26],
+	dg15: [u8; 381],
+	ec: [u8; 219],
+	sa: [u8; 74],
+	pk: [Field; 35],
+	reduction_pk: [Field; 35],
+	sig: [Field; 35],
 	sk_identity: Field,
 	icao_root: Field,
 	inclusion_branches: [Field; 80]) -> pub (Field, Field, Field, Field, Field){
 	let tmp = register_identity::<
 		0,
-		165,
-		155,
-		62,
-		26,
+		381,
+		219,
+		74,
+		35,
 		0,
-		20,
-		20,
-		6,
-		27,
-		135,
+		32,
+		32,
+		2,
+		31,
+		187,
 		42,
-		1,
-		32>(
+		22,
+		301>(
 	dg1, dg15, ec, sa, pk, reduction_pk, sig, sk_identity, icao_root, inclusion_branches);
 	(tmp.0, tmp.1, tmp.2, tmp.3, icao_root)
 }
