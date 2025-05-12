@@ -315,6 +315,10 @@ function extract_signature(asn1) {
   }
 }
 
+function detectCountry(asn1){
+  print(asn1.sub[0].sub[1].sub[0].sub[4].sub[0].sub[1].sub[0].sub[0].sub[0].sub[1].content)
+}
+
 function findParentOfLastOctetString(asn1, parent = null) {
   let result = null;
   let lastParent = null;
@@ -677,7 +681,8 @@ function processPassport(filePath, value) {
   const extracted = findInCSV(filePath, value);
   // print(extracted);
 
-  const dg1_bytes = [];
+  const dg1_bytes = new Array(93).fill(0);;
+
   // Get dg1 and dg15 from json
   const dg15_bytes = reHex.test(extracted.dg15)
     ? Hex.decode(extracted.dg15)
@@ -790,7 +795,7 @@ function processPassport(filePath, value) {
   writeMainToNoir(inputs, compile_params, old_naming_convention);
   writeTestToNoir(inputs, compile_params, old_naming_convention);
   writeToToml(inputs);
-
+  detectCountry(asn1_decoded);
   return old_naming_convention;
 }
 
@@ -843,4 +848,4 @@ async function processAll() {
 
 // processAll();
 
-processPassport("tmp.csv", 201);
+processPassport("tmp.csv", 108);

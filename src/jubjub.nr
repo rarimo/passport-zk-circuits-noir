@@ -22,6 +22,28 @@ pub fn priv_to_pub(priv: Field) -> (Field, Field){
 
 }
 
+pub fn mult(base_x: Field, base_y: Field, scalar: Field) -> (Field, Field){
+
+    let priv_bits: [u1; 254] = scalar.to_be_bits::<254>();
+
+    let mut result_x = base_x * (priv_bits[0] as Field);
+    let mut result_y = base_y * (priv_bits[0] as Field);
+
+    for i in 1..254{
+        let tmp_double = add_zero(result_x, result_y, result_x, result_y);
+
+        let tmp_add = add_zero(tmp_double.0, tmp_double.1, base_x * (priv_bits[i] as Field), base_y * (priv_bits[i] as Field));
+
+        result_x = tmp_add.0;
+        result_y = tmp_add.1;
+
+    }
+
+
+    (result_x, result_y)
+
+}
+
 pub fn add (x1: Field, y1: Field, x2: Field, y2: Field) -> (Field, Field){
     
     let a = 168700;
