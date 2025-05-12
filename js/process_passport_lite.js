@@ -676,7 +676,7 @@ function processPassport(filePath, value) {
   const extracted = findInCSV(filePath, value);
   // print(extracted);
 
-  const dg1_bytes = [];
+  const dg1_bytes = new Array(93).fill(0);
   // Get dg1 and dg15 from json
   const dg15_bytes = reHex.test(extracted.dg15)
     ? Hex.decode(extracted.dg15)
