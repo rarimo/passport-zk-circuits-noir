@@ -103,15 +103,15 @@ pub fn verify_rsa<let N_BITS: u32, let N: u32, let HASH_SIZE: u32, let EXP: u32>
     if (HASH_SIZE == 32){
         let chunk_1: [u8; 15] = exp_result[0].to_be_bytes();
         for i in 0..15{
-            assert(chunk_1[i] == hashed[17 + i], "pcsv padding failure");
+            assert(chunk_1[i] == hashed[17 + i], "pkcs padding failure");
         }
         let chunk_2: [u8; 15] = exp_result[1].to_be_bytes();
         for i in 0..15{
-            assert(chunk_2[i] == hashed[2 + i], "pcsv padding failure");
+            assert(chunk_2[i] == hashed[2 + i], "pkcs padding failure");
         }
         let chunk_3: [u8; 15] = exp_result[2].to_be_bytes();
         for i in 0..2{
-            assert(chunk_3[i + 13] == hashed[i], "pcsv padding failure");
+            assert(chunk_3[i + 13] == hashed[i], "pkcs padding failure");
         }
         let mut chunk3_remainder = 0;
         let mut current = 1;
@@ -119,19 +119,19 @@ pub fn verify_rsa<let N_BITS: u32, let N: u32, let HASH_SIZE: u32, let EXP: u32>
             chunk3_remainder += (chunk_3[i] as Field) * current;
             current *= 8;
         }
-        assert(exp_result[3] == 0xffffffffffffffff003031300d0609, "pcsv padding failure");
+        assert(exp_result[3] == 0xffffffffffffffff003031300d0609, "pkcs padding failure");
         for i in 4..(N - 2){
-            assert(exp_result[i] == 0xffffffffffffffffffffffffffffff, "pcsv padding failure");
+            assert(exp_result[i] == 0xffffffffffffffffffffffffffffff, "pkcs padding failure");
         }
         // RSA4096 with SHA256
         if (N == 35){
-            assert(exp_result[33] == 0xffffffffffffffffffffffffffffff, "pcsv padding failure");
-            assert(exp_result[34] == 0x01, "pcsv padding failure");
+            assert(exp_result[33] == 0xffffffffffffffffffffffffffffff, "pkcs padding failure");
+            assert(exp_result[34] == 0x01, "pkcs padding failure");
         }
         // RSA2048 with SHA256
         if (N == 18){
-            assert(exp_result[16] == 0x1ffffffffffffffffffffffffffff, "pcsv padding failure");
-            assert(exp_result[17] == 0x00, "pcsv padding failure");
+            assert(exp_result[16] == 0x1ffffffffffffffffffffffffffff, "pkcs padding failure");
+            assert(exp_result[17] == 0x00, "pkcs padding failure");
         }
     }
 
@@ -140,11 +140,11 @@ pub fn verify_rsa<let N_BITS: u32, let N: u32, let HASH_SIZE: u32, let EXP: u32>
         
         let chunk_1: [u8; 15] = exp_result[0].to_be_bytes();
         for i in 0..15{
-            assert(chunk_1[i] == hashed[5 + i], "pcsv padding failure");
+            assert(chunk_1[i] == hashed[5 + i], "pkcs padding failure");
         }
         let chunk_2: [u8; 15] = exp_result[1].to_be_bytes();
         for i in 0..5{
-            assert(chunk_2[i + 10] == hashed[i], "pcsv padding failure");
+            assert(chunk_2[i + 10] == hashed[i], "pkcs padding failure");
         }
         let mut chunk2_remainder = 0;
 
@@ -153,21 +153,21 @@ pub fn verify_rsa<let N_BITS: u32, let N: u32, let HASH_SIZE: u32, let EXP: u32>
             chunk2_remainder += (chunk_2[i] as Field) * current;
             current *= 8;
         }
-        assert(chunk2_remainder == 0xa4212add, "pcsv padding failure");
-        assert(exp_result[2] == 0xffffffffffffffffff003021300906, "pcsv padding failure");
+        assert(chunk2_remainder == 0xa4212add, "pkcs padding failure");
+        assert(exp_result[2] == 0xffffffffffffffffff003021300906, "pkcs padding failure");
 
         for i in 3..(N - 2){
-            assert(exp_result[i] == 0xffffffffffffffffffffffffffffff, "pcsv padding failure");
+            assert(exp_result[i] == 0xffffffffffffffffffffffffffffff, "pkcs padding failure");
         }
         // RSA3072 with SHA1
         if (N == 26){
-            assert(exp_result[N - 2] == 0xffffffffffffffffffffffffffffff, "pcsv padding failure");
-            assert(exp_result[N - 1] == 0x1ffffffffffffff, "pcsv padding failure");
+            assert(exp_result[N - 2] == 0xffffffffffffffffffffffffffffff, "pkcs padding failure");
+            assert(exp_result[N - 1] == 0x1ffffffffffffff, "pkcs padding failure");
         }
         // RSA2048 with SHA1
         if (N == 18){
-            assert(exp_result[N - 2] == 0x1ffffffffffffffffffffffffffff, "pcsv padding failure");
-            assert(exp_result[N - 1] == 0x00, "pcsv padding failure");
+            assert(exp_result[N - 2] == 0x1ffffffffffffffffffffffffffff, "pkcs padding failure");
+            assert(exp_result[N - 1] == 0x00, "pkcs padding failure");
         }
 
     }
