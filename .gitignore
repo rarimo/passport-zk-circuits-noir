@@ -15,3 +15,4 @@ input_generation/*
 ultraPlonkTrustedSetup.dat
 circuits/*
 logs.*
+tmp.*
