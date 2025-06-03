@@ -441,7 +441,7 @@ function extractFromDg15(dg15) {
     const p = BigInt(dg15_decoded.sub[0].sub[0].sub[1].sub[4].content)
       .toString(16)
       .toLocaleUpperCase();
-    print(p);
+    // print(p);
     switch (p) {
       case "A9FB57DBA1EEA9BC3E660A909D838D718C397AA3B561A6F7901E0E82974856A7": {
         // brainpoolP256r1
@@ -684,6 +684,7 @@ function processPassport(filePath, value) {
 
   // decode sod
   const asn1_decoded = decoded(extracted.sod);
+
   // get ec in hex and bytes
   const [ec_hex, dg_hash_type] = extract_encapsulated_content(asn1_decoded);
   const ec_bytes = hexStringToBytes(ec_hex);
@@ -789,6 +790,7 @@ function processPassport(filePath, value) {
   writeMainToNoir(inputs, compile_params, old_naming_convention);
   writeTestToNoir(inputs, compile_params, old_naming_convention);
   writeToToml(inputs);
+  print(asn1_decoded.sub[0].sub[1].sub[0].sub[4].sub[0].sub[1].sub[0].sub[0].sub[0].sub[1].content)
 
   return old_naming_convention;
 }
@@ -840,6 +842,10 @@ async function processAll() {
 }
 
 
+// for (var i = 0; i < 200; i++){
+//   try {processPassport("tmp.csv", i);print(i);} catch {}
+// }
 // processAll();
 
-processPassport("tmp.csv", 201);
+
+processPassport("tmp.csv", 130)
