@@ -51,7 +51,7 @@ pub fn priv_to_pub(priv: [u8; 32]) -> [u8; 65]{
 
 fn pub_to_addr(pubkey: [u8;65])->[u8; 20]{
     let hash = std::sha256::digest((pubkey));
-    ripemd160(hash)
+    ripemd160::<32>(hash)
 }
 
 #[test]
