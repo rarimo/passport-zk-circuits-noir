@@ -106,7 +106,12 @@ This proposal includes the mechanism for selecting the register identity circuit
 
 ### Benchmarks
 
-TODO
+#### Android
+
+| ALGO | RAM GB | Time |
+| --- | --- | --- |
+| brainpoolP512r1 | 2.7 | 1 min 7 sec |
+| secp521r1 | 2.9 | 1 min |
 
 ### Run
 
