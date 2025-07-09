@@ -89,7 +89,20 @@ This proposal includes the mechanism for selecting the register identity circuit
 | 27   | ECDSA  | 521 = 66*8     | - / secp521r1       | -    | 512       |
 | 28   | ECDSA  | 384            | - / secp384r1       | -    | 384       |
 
-###
+
+**Active auth signature types table:**
+
+| TYPE | ALGO | BITS | E | SALT | CURVE | HASH_ALGO |
+| --- | --- | --- | --- | --- | --- | --- |
+| 0 | NO AA | - | - | - | - |  |
+| 1 | RSA | 1024 | 65537 | - | - | 160 |
+| 2 | RSA | 1024 | 3 | - | - | 160 |
+| 20 | ECDSA | - | - | - | secp256r1 | 160 |
+| 21 | ECDSA | - | - | - | BrainpoolP256 | 160 |
+| 22 | ECDSA | - | - | - | Brainpool320r1 | 256 |
+| 23 | ECDSA | - | - | - | secp192r1 | 160 |
+
+
 
 ### Benchmarks
 
