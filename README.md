@@ -94,7 +94,7 @@ This proposal includes the mechanism for selecting the register identity circuit
 
 | TYPE | ALGO | BITS | E | SALT | CURVE | HASH_ALGO |
 | --- | --- | --- | --- | --- | --- | --- |
-| 0 | NO AA | - | - | - | - |  |
+| 0 | NO AA | - | - | - | - | - |
 | 1 | RSA | 1024 | 65537 | - | - | 160 |
 | 2 | RSA | 1024 | 3 | - | - | 160 |
 | 20 | ECDSA | - | - | - | secp256r1 | 160 |
