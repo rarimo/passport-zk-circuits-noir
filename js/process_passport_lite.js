@@ -67,6 +67,9 @@ function compute_barret_reduction(n_bits, n) {
 //   - 23: ECDSA secp192r1 + SHA1
 
 function getSigType(pk, sig, hashType) {
+  // print(pk);
+  // print(sig);
+  // print(hashType);
   if (sig.salt) {
     // RSA PSS
     if (
@@ -119,6 +122,7 @@ function getSigType(pk, sig, hashType) {
     }
   }
   if (sig.salt == 0) {
+    console.log(hashType);
     // RSA
     if (pk.n.length == 512 && pk.exp == "10001" && hashType == "32") {
       return 1;
@@ -134,6 +138,9 @@ function getSigType(pk, sig, hashType) {
     }
     if (pk.n.length == 768 && pk.exp == "e3dd" && hashType == "20") {
       return 6;
+    }
+    if (pk.n.length == 768 && pk.exp == "b123" && hashType == "20") {
+      return 7;
     }
   }
   if (sig.r) {
@@ -241,7 +248,7 @@ function getDg15Shift(asn1, dg15, dgHashType) {
 }
 
 function getEcShift(asn1, ec, hashType) {
-  let sa = getZero(asn1);
+  let sa = nigger(asn1);
   const ecHash = computeHash(hashType, ec);
 
   return (
@@ -288,11 +295,25 @@ function getZero(asn1) {
   return null;
 }
 
-function extract_signed_atributes(asn1) {
-  let sa = getZero(asn1);
-  const hashType = sa.sub.slice(-1)[0].sub.slice(-1)[0].sub[0].length;
+function nigger(asn1){
+  if (!asn1) return null;
+  let res = asn1.sub[0].sub[1].sub[0].sub[4].sub[0].sub[3]
+  return res
+}
 
+function extract_signed_atributes(asn1) {
+  let sa;
+  let hashType; 
+  try {
+    sa = getZero(asn1);
+    hashType = sa.sub.slice(-1)[0].sub.slice(-1)[0].sub[0].length;
+  } catch {
+    sa = nigger(asn1)
+    hashType = 32;
+  }
+  
   return ["31" + sa.dump.slice(2), hashType];
+  // return ["3181C9301506092A864886F70D01090331080606678108010101301C06092A864886F70D010905310F170D3233303131363135313435365A302F06092A864886F70D01090431220420A9B6A2F379C32D990F3897B73EAFBD7DE5E4AD82B5B0AE81492819B68DC1263C306106092A864886F70D01093431543052300D06096086480165030402010500A14106092A864886F70D01010A3034A00F300D06096086480165030402010500A11C301A06092A864886F70D010108300D06096086480165030402010500A203020120", 32]
 }
 
 function extract_signature(asn1) {
@@ -414,8 +435,8 @@ function extract_rsa_pubkey(asn1) {
   const asn1_location = get_rsa_key_location(asn1);
 
   let pk = BigInt(asn1_location.sub[0].sub[0].content, 10).toString(16);
-  let exp = BigInt(asn1_location.sub[0].sub[1].content, 10).toString(16);
 
+  let exp = BigInt(asn1_location.sub[0].sub[1].content, 10).toString(16);
   return { n: pk, exp: exp };
 }
 
@@ -702,6 +723,8 @@ function processPassport(filePath, value) {
       ? extract_rsa_pubkey(asn1_decoded)
       : extract_ecdsa_pubkey(asn1_decoded);
   // get sig algo
+  
+  console.log(pk)
   let sigType = getSigType(pk, sig, hash_type);
   const isSha256 =
     asn1_decoded.sub[0].sub[1].sub[0]?.sub[4]?.sub[0]?.sub[4]?.sub[0]?.content
@@ -714,7 +737,7 @@ function processPassport(filePath, value) {
   }
 
   if (sigType == 0){
-    print("UNKNOWN TECHONOLY");
+    // print("UNKNOWN TECHONOLY");
     return("UNKNOWN TECHONOLY");
   }
 
@@ -848,4 +871,4 @@ async function processAll() {
 // processAll();
 
 
-processPassport("tmp.csv", 130)
+processPassport("tmp.csv", 245)
