@@ -45,14 +45,12 @@ pub fn priv_to_pub(priv: [u8; 32]) -> [u8; 65]{
     for i in 0..15{
         pubkey_bytes[i+50] = tmp_bits_15[i];
     }
-    println(pubkey_bytes);
 
     pubkey_bytes
 }
 
 fn pub_to_addr(pubkey: [u8; 65])->[u8; 20]{
     let hash = std::sha256::digest(pubkey);
-    print(hash);
     ripemd160(hash)
 }
 

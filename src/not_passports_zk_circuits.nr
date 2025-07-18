@@ -25,7 +25,7 @@ pub fn register_identity<
     dg15: [u8; DG15_LEN],
     ec: [u8; EC_LEN],
     sa: [u8; SA_LEN],
-    pk: [Field; N],
+    pk: [Field; N], 
     reduction_pk: [Field; N],
     sig: [Field; N],
     sk_identity: Field,
@@ -103,7 +103,7 @@ fn passport_verification_flow<
         sa: [u8; SA_LEN],
     ){
     
-    // let dg1_hash: [u8; DG_HASH_ALGO] = passport_hash::<DG_HASH_ALGO, DG1_LEN>(dg1);
+    let dg1_hash: [u8; DG_HASH_ALGO] = passport_hash::<DG_HASH_ALGO, DG1_LEN>(dg1);
 
     
     let mut dg15_hash: [u8; DG_HASH_ALGO] = [0; DG_HASH_ALGO];
@@ -113,7 +113,7 @@ fn passport_verification_flow<
     let ec_hash: [u8; HASH_ALGO] = passport_hash::<HASH_ALGO, EC_LEN>(ec);
     
     for i in 0..DG_HASH_ALGO{
-        // assert(dg1_hash[i] == ec[i + DG1_SHIFT], "dg1 mismatch");
+        assert(dg1_hash[i] == ec[i + DG1_SHIFT], "dg1 mismatch");
         if (DG15_LEN != 0){
             assert(dg15_hash[i] == ec[i + DG15_SHIFT], "dg15 mismatch");
         }
@@ -246,6 +246,26 @@ fn verify_signature<
 
 
         let _ = super::rsa::verify_rsa::<3072, 26, HASH_ALGO, 58333>(
+            pk_fixed, 
+            red_fixed, 
+            sig_fixed, 
+            hashed
+        );
+    }
+    if (SIG_TYPE == 7){
+
+        let mut pk_fixed: [Field; 26] = [0; 26];
+        let mut red_fixed: [Field; 26] = [0; 26];
+        let mut sig_fixed: [Field; 26] = [0; 26];
+
+        for i in 0..26{
+            pk_fixed[i] = pk[i];
+            red_fixed[i] = reduction_pk[i];
+            sig_fixed[i] = sig[i];
+        }
+
+
+        let _ = super::rsa::verify_rsa::<3072, 26, HASH_ALGO, 45347>(
             pk_fixed, 
             red_fixed, 
             sig_fixed, 
