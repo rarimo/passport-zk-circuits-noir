@@ -25,7 +25,7 @@ pub fn register_identity<
     dg15: [u8; DG15_LEN],
     ec: [u8; EC_LEN],
     sa: [u8; SA_LEN],
-    pk: [Field; N],
+    pk: [Field; N], 
     reduction_pk: [Field; N],
     sig: [Field; N],
     sk_identity: Field,
@@ -246,6 +246,26 @@ fn verify_signature<
 
 
         let _ = super::rsa::verify_rsa::<3072, 26, HASH_ALGO, 58333>(
+            pk_fixed, 
+            red_fixed, 
+            sig_fixed, 
+            hashed
+        );
+    }
+    if (SIG_TYPE == 7){
+
+        let mut pk_fixed: [Field; 26] = [0; 26];
+        let mut red_fixed: [Field; 26] = [0; 26];
+        let mut sig_fixed: [Field; 26] = [0; 26];
+
+        for i in 0..26{
+            pk_fixed[i] = pk[i];
+            red_fixed[i] = reduction_pk[i];
+            sig_fixed[i] = sig[i];
+        }
+
+
+        let _ = super::rsa::verify_rsa::<3072, 26, HASH_ALGO, 45347>(
             pk_fixed, 
             red_fixed, 
             sig_fixed, 
