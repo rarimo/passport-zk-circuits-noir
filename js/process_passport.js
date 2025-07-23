@@ -6,6 +6,8 @@ import { createHash } from 'crypto';
 
 
 const reHex = /^\s*(?:[0-9A-Fa-f][0-9A-Fa-f]\s*)+$/
+const resultFile = "../Prover.toml"
+const passportFile = "germ.json"
 function print(x){
     console.log(x)
 }
@@ -474,7 +476,8 @@ function writeTestToNoir(inputs, params, name){
 
 function writeToToml(inputs){
     const res_str = `dg1=${inputs.dg1}\ndg15=${inputs.dg15}\nec=${inputs.ec}\nicao_root="${inputs.icao_root}"\ninclusion_branches=${inputs.inclusion_branches}\npk=${inputs.pk}\nreduction_pk=${inputs.reduction}\nsa=${inputs.sa}\nsig=${inputs.sig}\nsk_identity="${inputs.sk_identity}"`.replaceAll(",", `","`).replaceAll("[", `["`).replaceAll("]", `"]`).replace(`dg15=[""]`, "dg15=[]")
-    fs.writeFile("../Prover.toml", res_str, "utf-8", Error);
+    fs.writeFile(resultFile, res_str, "utf-8", Error);
+    console.log("See " + resultFile + " for test result")
 }
 
 function processPassport(filePath){
@@ -517,7 +520,6 @@ function processPassport(filePath){
 
     const [sk_iden, icao_root, branches] = getFakeIdenData(ec_bytes, pk)
     
-    
     const inputs = {
         dg1: "[" + dg1_bytes.toString() + "]",
         dg15: dg15_bytes.length? "[" + dg15_bytes.toString() + "]" : "[]",
@@ -552,8 +554,6 @@ function processPassport(filePath){
     writeMainToNoir(inputs, compile_params, old_naming_convention);
     writeTestToNoir(inputs, compile_params, old_naming_convention);
     writeToToml(inputs);
-
-
 }
 
-processPassport("germ.json");
+processPassport(passportFile);
