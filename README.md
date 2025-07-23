@@ -1,5 +1,37 @@
 ## Implementation of Zero-Knowledge verification for biometric passports using Noir
 
+### Requirements
+
+- nargo version = 1.0.0-beta.1
+- bb verion = 0.66.0
+
+### Tests
+
+To run tests for a specific passport provide json file with the passport details ([see](js/process_passport.js)) and use
+```
+cd js
+npm run test
+```
+
+To run the noir tests use
+```
+nargo test
+```
+
+### Run
+
+To build circuit use
+```
+nargo execute
+```
+
+For proving the [Barretenberg backend](https://github.com/AztecProtocol/barretenberg) is recommended
+
+To generate a proof use
+```
+nargo execute
+bb prove -b ./target/noir_dl.json -w ./target/noir_dl.gz -o ./target/proof
+```
 
 ### Support
 
@@ -103,7 +135,6 @@ This proposal includes the mechanism for selecting the register identity circuit
 | 23 | ECDSA | - | - | - | secp192r1 | 160 |
 
 
-
 ### Benchmarks
 
 #### Android
@@ -112,34 +143,6 @@ This proposal includes the mechanism for selecting the register identity circuit
 | --- | --- | --- |
 | brainpoolP512r1 | 2.7 | 1 min 7 sec |
 | secp521r1 | 2.9 | 1 min |
-
-### Run
-
-#### Tests
-
-To run tests for a specific passport provide json file with the passport details ([see](js/process_passport.js)) and use
-```
-cd js
-npm run test
-```
-
-To run the noir tests  use
-```
-nargo test
-```
-
-To build circuit use
-```
-nargo execute
-```
-
-For proving the [Barretenberg backend](https://github.com/AztecProtocol/barretenberg) is recommended
-
-To generate a proof use
-```
-nargo execute
-bb prove -b ./target/noir_dl.json -w ./target/noir_dl.gz -o ./target/proof
-```
 
 
 ### Issues
