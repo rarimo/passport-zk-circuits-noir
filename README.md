@@ -117,7 +117,7 @@ This proposal includes the mechanism for selecting the register identity circuit
 
 #### Tests
 
-To run tests for a specific passport use
+To run tests for a specific passport provide json file with the passport details ([see](js/process_passport.js)) and use
 ```
 cd js
 npm run test
