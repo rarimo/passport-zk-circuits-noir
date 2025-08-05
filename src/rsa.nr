@@ -16,6 +16,9 @@ pub fn exp<let N_BITS: u32, let N: u32, let EXP: u32>(modulus: [Field; N], reduc
     if (EXP == 45347){
         exp_result = exp_45347::<N_BITS, N>(modulus, reduction, x);
     }
+    if (EXP == 46271){
+        exp_result = exp_46271::<N_BITS, N>(modulus, reduction, x);
+    }
     if (EXP == 3){
         exp_result = exp_3::<N_BITS, N>(modulus, reduction, x);
     }
@@ -83,6 +86,30 @@ fn exp_45347<let N_BITS: u32, let N: u32>(modulus: [Field; N], reduction: [Field
     let mut x_big: RuntimeBigNum<N, N_BITS> = RuntimeBigNum::from_array(params, x);
 
     let mut exp: u32 = 45347;
+    
+    for _ in 0..15{
+        if exp % 2 == 1{
+            res *= x_big;
+        }
+        x_big *= x_big;
+
+        exp /= 2;
+    }
+    res *= x_big;
+
+
+    res.get_limbs()
+}
+
+fn exp_46271<let N_BITS: u32, let N: u32>(modulus: [Field; N], reduction: [Field; N], x: [Field; N]) -> [Field;N]{
+    let params: BigNumParams<N, N_BITS> = BigNumParams::new(false,
+        modulus,
+        reduction
+    );
+    let mut res= RuntimeBigNum::one(params);
+    let mut x_big: RuntimeBigNum<N, N_BITS> = RuntimeBigNum::from_array(params, x);
+
+    let mut exp: u32 = 46271;
     
     for _ in 0..15{
         if exp % 2 == 1{
