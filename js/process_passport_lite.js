@@ -142,6 +142,9 @@ function getSigType(pk, sig, hashType) {
     if (pk.n.length == 768 && pk.exp == "b123" && hashType == "20") {
       return 7;
     }
+    if (pk.n.length == 768 && pk.exp == "b4bf" && hashType == "20") {
+      return 8;
+    }
   }
   if (sig.r) {
     switch (pk.param) {
@@ -871,4 +874,4 @@ async function processAll() {
 // processAll();
 
 
-processPassport("tmp.csv", 245)
+processPassport("tmp.csv", 252)
