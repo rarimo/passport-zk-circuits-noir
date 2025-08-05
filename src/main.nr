@@ -1,4 +1,4 @@
-//registerIdentity_7_160_3_3_336_216_1_1080_3_256
+//registerIdentity_8_160_3_3_336_216_1_1080_3_256
 pub mod bignum;
 pub mod test_main;
 pub mod sigver;
@@ -34,7 +34,7 @@ fn main(
 		0,
 		20,
 		20,
-		7,
+		8,
 		27,
 		135,
 		42,
