@@ -104,6 +104,7 @@ pub fn digest<let N: u32>(msg: [u8; N]) -> [u8; 20] {
         i = i + 1;
         if i == 64 {
             // Enough to hash block
+
             state = process_chunk(state, u8_to_u32(msg_block));
             i = 0;
         }
@@ -111,10 +112,10 @@ pub fn digest<let N: u32>(msg: [u8; N]) -> [u8; 20] {
     msg_block[i] = 1 << 7;
     i += 1;
 
-    if i >= 49 {
+    if i >= 57 {
         // Not enough bits (128) to store length. Fill up with zeros.
         if i < 64 {
-            for _i in 49..64 {
+            for _i in 57..64 {
                 if i <= 63 {
                     msg_block[i] = 0;
                     i += 1;
@@ -126,20 +127,21 @@ pub fn digest<let N: u32>(msg: [u8; N]) -> [u8; 20] {
         i = 0;
     }
 
+
     let len = 8 * msg.len();
-    let len_bytes: [u8; 16] = (len as Field).to_le_bytes();
+    let len_bytes: [u8; 8] = (len as Field).to_le_bytes();
     for _i in 0..64 {
-        // In any case, fill blocks up with zeros until the last 128 (i.e. until i = 112).
-        if i < 48 {
+        if i < 56 {
             msg_block[i] = 0;
             i += 1;
         } else if i < 64 {
-            for j in 0..16 {
+            for j in 0..8 {
                 msg_block[63 - j] = len_bytes[j];
             }
-            i += 16; // Done.
+            i += 8;
         }
     }
+
 
     state = process_chunk(state, u8_to_u32(msg_block));
 
@@ -156,4 +158,10 @@ fn test_sha1_2_chunks() {
 fn test_sha1_1_chunk() {
     let res = digest::<2>([0,0]);
     assert(res == [20, 137, 249, 35, 196, 220, 167, 41, 23, 139, 62, 50, 51, 69, 133, 80, 216, 221, 223, 41]);
+}
+
+#[test]
+fn test_sha1(){
+    let res = digest([48,129,177,2,1,0,48,13,6,9,96,134,72,1,101,3,4,2,1,5,0,48,129,156,48,37,2,1,1,4,32,42,0,35,19,201,14,74,69,144,193,19,127,78,101,52,216,226,203,27,60,61,58,242,150,220,136,136,55,101,197,237,73,48,37,2,1,2,4,32,58,147,59,63,119,31,115,206,55,35,85,22,83,74,51,59,234,171,138,41,144,16,46,25,24,2,187,193,132,99,223,76,48,37,2,1,3,4,32,116,230,229,125,206,193,242,241,63,129,12,71,181,229,115,4,64,63,146,171,33,102,131,123,226,218,86,83,74,99,184,163,48,37,2,1,14,4,32,161,6,208,225,217,2,94,183,246,5,125,130,225,129,126,117,148,220,232,76,38,232,72,14,204,39,63,28,56,20,141,118]);
+    assert(res == [77, 74, 122, 72, 76, 154, 189, 65, 0, 222, 132, 178, 101, 228, 167, 120, 117, 46, 150, 183]);
 }

@@ -191,7 +191,7 @@ pub fn verify_rsa<let N_BITS: u32, let N: u32, let HASH_SIZE: u32, let EXP: u32>
 
     // SHA1 cases
     if (HASH_SIZE == 20){
-        
+
         let chunk_1: [u8; 15] = exp_result[0].to_be_bytes();
         for i in 0..15{
             assert(chunk_1[i] == hashed[5 + i], "pkcs padding failure");
