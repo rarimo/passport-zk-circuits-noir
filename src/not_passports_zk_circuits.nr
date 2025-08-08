@@ -118,7 +118,6 @@ fn passport_verification_flow<
             assert(dg15_hash[i] == ec[i + DG15_SHIFT], "dg15 mismatch");
         }
     }
-
     for i in 0..HASH_ALGO{
         assert(ec_hash[i] == sa[i + EC_SHIFT], "ec mismatch");
     }
