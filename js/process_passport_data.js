@@ -13,8 +13,8 @@ const reHex = /^\s*(?:[0-9A-Fa-f][0-9A-Fa-f]\s*)+$/;
 function print(x) {
   console.log(x);
 }
-
 function computeHash(outLen, input) {
+
   const hashAlgorithms = {
     20: "sha1",
     28: "sha224",
@@ -67,10 +67,9 @@ function compute_barret_reduction(n_bits, n) {
 //   - 23: ECDSA secp192r1 + SHA1
 
 function getSigType(pk, sig, hashType) {
-
-  print(pk);
-  print(sig);
-  print(hashType);
+  // print(pk);
+  // print(sig);
+  // print(hashType);
   if (sig.salt) {
     // RSA PSS
     if (
@@ -456,7 +455,7 @@ function extractFromDg15(dg15) {
       ? "ecdsa"
       : "rsa";
   let aa_sig_type = 0;
-
+  // print(pk_type);
   if (pk_type == "ecdsa") {
     let pk_bit = dg15_decoded.sub[0].sub[1].content.slice(8);
     pk = {
@@ -466,14 +465,13 @@ function extractFromDg15(dg15) {
     const p = BigInt(dg15_decoded.sub[0].sub[0].sub[1].sub[4].content)
       .toString(16)
       .toLocaleUpperCase();
-    print(p);
+    // print(p);
     switch (p) {
       case "A9FB57DBA1EEA9BC3E660A909D838D718C397AA3B561A6F7901E0E82974856A7": {
         // brainpoolP256r1
         aa_sig_type = 21;
         break;
       }
-      case "FFFFFFFF00000000FFFFFFFFFFFFFFFFBCE6FAADA7179E84F3B9CAC2FC632551":
       case "FFFFFFFF00000001000000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFF": {
         // secp256r1
         aa_sig_type = 20;
@@ -682,34 +680,17 @@ function parseCSVWithNewlines(content) {
   return rows;
 }
 
-function findInCSV(filePath, inputValue) {
-  const content = fs.readFileSync(filePath, "utf8");
-  const rows = parseCSVWithNewlines(content);
-
-  // Find row where first column matches inputValue
-  for (const row of rows) {
-    if (row[0] === inputValue.toString()) {
-      return {
-        sod: row[row.length - 1],
-        dg15: row[3],
-      };
-    }
-  }
-  return null;
-}
 
 function processPassport(filePath, value) {
-  const extracted = findInCSV(filePath, value);
+  const json = readJsonFileSync(filePath)
   // print(extracted);
 
-  const dg1_bytes = new Array(93).fill(0);
   // Get dg1 and dg15 from json
-  const dg15_bytes = reHex.test(extracted.dg15)
-    ? Hex.decode(extracted.dg15)
-    : Base64.unarmor(extracted.dg15);
+  const dg1_bytes  = json.dg1? reHex.test(json.dg1) ? Hex.decode(json.dg1) : Base64.unarmor(json.dg1) : [];
+  const dg15_bytes = reHex.test(json.dg15) ? Hex.decode(json.dg15) : Base64.unarmor(json.dg15);
 
   // decode sod
-  const asn1_decoded = decoded(extracted.sod);
+  const asn1_decoded = decoded(json.sod);
 
   // get ec in hex and bytes
   const [ec_hex, dg_hash_type] = extract_encapsulated_content(asn1_decoded);
@@ -752,7 +733,7 @@ function processPassport(filePath, value) {
     : 0;
 
   // get dg15 info
-  const [aa_pk, aa_shift, aa_sig_type] = extractFromDg15(extracted.dg15);
+  const [aa_pk, aa_shift, aa_sig_type] = extractFromDg15(json.dg15);
 
   const chunked = getChunkedParams(pk, sig);
 
@@ -824,54 +805,61 @@ function processPassport(filePath, value) {
 // For all passports
 
 async function processAll() {
-  for (var i = 0; i < 1000; i++){
-    try {
-      let tmp = processPassport("tmp.csv", i)
-      if (tmp == "UNKNOWN TECHONOLY"){
-        console.log(i, ": UNKNOWN TECHONOLY");
-      }
-      const cmd = 'cd .. && nargo test --show-output --exact test_main::test_main';
-      
-      try {
-        // const { stdout, stderr } = await execAsync(cmd);
-        // const output = stdout + stderr;
-        
-        // Save last 10 lines
-        // const lines = output.split('\n');
-        // const last5 = lines.slice(-5).join('\n');
-        const last5 = ""
-        await appendFile('logs.txt', 
-          `=== Test ${i}: ${tmp} ===\n${last5}\n\n`);
-        
-      } catch (testError) {
-        await appendFile('logs.txt', 
-          `=== Test ${i}: ${tmp} ERROR ===\n`);
-      }
+  let res = ["registerIdentity_1_160_3_4_576_200_NA",
+  "registerIdentity_11_256_3_5_576_248_1_1808_4_256",
+  "registerIdentity_14_256_3_4_336_64_1_1480_5_296",
+  "registerIdentity_20_160_3_3_736_200_NA",
+  "registerIdentity_20_256_3_5_336_72_NA",
+  "registerIdentity_4_160_3_3_336_216_1_1296_3_256",
+  "registerIdentity_1_256_3_6_336_560_1_2744_4_256",
+  "registerIdentity_21_256_3_7_336_264_21_3072_6_2008",
+  "registerIdentity_11_256_3_5_576_248_1_1808_4_256",
+  "registerIdentity_14_256_3_4_336_64_1_1480_5_296",
+  "registerIdentity_1_256_3_6_336_560_1_2744_4_256",
+  "registerIdentity_20_256_3_5_336_72_NA",
+  "registerIdentity_4_160_3_3_336_216_1_1296_3_256",
+  "registerIdentity_20_160_3_3_736_200_NA"]
 
-    } catch(e){
-      if (e instanceof TypeError && e.message.includes("Cannot read properties of null")) {
-        // No line in file, good
+  let arr = getAllFilepath("./data");
+  for (const file of arr) {
+    try{
+      let tmp = await processPassport(file);
+      if (res.includes(tmp)){
+        console.log("match", tmp, file);
       } else {
-        if (
-          e instanceof Error &&
-          e.message &&
-          (e.message.includes('"enc" must be a numeric array or a string') ||
-          e.message.includes("Requesting byte offset 1 on a stream of length 1"))
-        ) {
-          console.log(i, ": No sod provided");
-        } else {
-          console.error(`Unknown error at index ${i}:`, e);
-        }
+        console.log("not match", tmp);
       }
+    } catch {
+      console.log(file);
     }
   }
 }
 
 
-// for (var i = 0; i < 200; i++){
-//   try {processPassport("tmp.csv", i);print(i);} catch {}
-// }
+function getAllFilepath(dirPath, arrayOfFiles){
+
+  let files = fs.readdirSync(dirPath);
+
+  arrayOfFiles = arrayOfFiles || [];
+
+  files.forEach(function(file) {
+    const fullPath = path.join(dirPath, file);
+    if (fs.statSync(fullPath).isDirectory()) {
+      arrayOfFiles = getAllFilepath(fullPath, arrayOfFiles);
+    } else {
+      if (path.extname(file).toLowerCase() === '.json') {
+        arrayOfFiles.push(fullPath);
+      }
+    }
+  });
+
+  return arrayOfFiles;
+}
+
+
 // processAll();
 
 
-processPassport("tmp.csv", 289)
+
+processPassport("")
+
