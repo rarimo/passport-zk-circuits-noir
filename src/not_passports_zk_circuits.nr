@@ -681,7 +681,7 @@ fn extract_dg15_pk_hash<
     dg15_pk_hash
 }
 
-fn extract_dg1_commitment<
+pub fn extract_dg1_commitment<
     let DG1_LEN: u32>(
     dg1: [u8; DG1_LEN], 
     sk_identity: Field) -> Field{
@@ -713,7 +713,7 @@ fn extract_dg1_commitment<
     poseidon_hasher.finish()
 }
 
-fn extract_pk_identity_hash<>(
+pub fn extract_pk_identity_hash<>(
     sk_identity: Field
     ) -> Field{
     let mut hasher = PoseidonHasher::default();
@@ -868,7 +868,7 @@ unconstrained fn __u8_to_8_u1(x:u8) -> [u1; 8]{
     out
 }
 
-fn passport_hash<let HASH_SIZE: u32, let N: u32>(preimage: [u8; N]) -> [u8; HASH_SIZE]{
+pub fn passport_hash<let HASH_SIZE: u32, let N: u32>(preimage: [u8; N]) -> [u8; HASH_SIZE]{
     let mut out: [u8; HASH_SIZE] = [0; HASH_SIZE];
     if (HASH_SIZE == 20){
         let hash_result = super::sha1::digest(preimage);
