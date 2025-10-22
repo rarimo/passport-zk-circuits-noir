@@ -251,7 +251,7 @@ function getDg15Shift(asn1, dg15, dgHashType) {
 }
 
 function getEcShift(asn1, ec, hashType) {
-  let sa = nigger(asn1);
+  let sa = get_sa_for_niger(asn1);
   const ecHash = computeHash(hashType, ec);
 
   return (
@@ -298,7 +298,7 @@ function getZero(asn1) {
   return null;
 }
 
-function nigger(asn1){
+function get_sa_for_niger(asn1){
   if (!asn1) return null;
   let res = asn1.sub[0].sub[1].sub[0].sub[4].sub[0].sub[3]
   return res
@@ -311,7 +311,7 @@ function extract_signed_atributes(asn1) {
     sa = getZero(asn1);
     hashType = sa.sub.slice(-1)[0].sub.slice(-1)[0].sub[0].length;
   } catch {
-    sa = nigger(asn1)
+    sa = get_sa_for_niger(asn1)
     hashType = 32;
   }
   
