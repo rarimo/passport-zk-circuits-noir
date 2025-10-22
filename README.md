@@ -129,13 +129,14 @@ This proposal includes the mechanism for selecting the register identity circuit
 | TYPE | ALGO | BITS | E | SALT | CURVE | HASH_ALGO |
 | --- | --- | --- | --- | --- | --- | --- |
 | 0 | NO AA | - | - | - | - | - |
-| 1 | RSA | 1024 | 65537 | - | - | 160 |
-| 2 | RSA | 1024 | 3 | - | - | 160 |
+| 1 | RSA | any | any | - | - | any |
 | 20 | ECDSA | - | - | - | secp256r1 | 160 |
 | 21 | ECDSA | - | - | - | BrainpoolP256 | 160 |
 | 22 | ECDSA | - | - | - | Brainpool320r1 | 256 |
 | 23 | ECDSA | - | - | - | secp192r1 | 160 |
+| 24 | ECDSA | - | - | - | secp384r1 | 384 |
 
+Note: Any RSA goes as type 1, but we handle different ecdsa prime curves as different algos in production.
 
 ### Benchmarks
 
