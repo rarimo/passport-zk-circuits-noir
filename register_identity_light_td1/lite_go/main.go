@@ -162,14 +162,14 @@ func process(jsonPath string) ([]string, error) {
 		fmt.Printf("Field %d: %s\n", i+1, f)
 	}
 
-	_, stderr2, err := RunCommand("cd .. && bb prove -w ./target/noir_dl.gz -b ./target/noir_dl.json -o target/proof")
+	_, stderr2, err := RunCommand("cd .. && bb prove -w ./target/register_identity_light.gz -b ./target/register_identity_light.json -o target/proof")
 	if err != nil {
 		fmt.Println("Error:", err)
 		fmt.Println("Stderr:", stderr2)
 	}
 	fmt.Println("proof generated!")
 
-	cmdFormat := "cd .. && bb verify -s ultra_honk -k ./target/%d.vk -p ./target/proof -v"
+	cmdFormat := "cd .. && bb verify -s ultra_honk -k ./keys/register_lite_%d.vk -p ./target/proof -v"
 
 	command := fmt.Sprintf(cmdFormat, algo*8)
 
@@ -318,21 +318,7 @@ func setupBB() {
 func writeNoirCode(size int) error {
 	path := "../src/main.nr"
 
-	code := fmt.Sprintf(`pub mod bignum;
-pub mod test_main;
-pub mod sigver;
-pub mod big_curve;
-pub mod rsa;
-pub mod sha1;
-pub mod sha224;
-pub mod sha384;
-pub mod rsa_pss;
-pub mod jubjub;
-pub mod smt;
-pub mod utils;
-pub mod lite;
-pub mod not_passports_zk_circuits;
-use lite::register_identity_light;
+	code := fmt.Sprintf(`use noir_dl::lite::register_identity_light;
 
 fn main(
 	dg1: [u8; 95],
