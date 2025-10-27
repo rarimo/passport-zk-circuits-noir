@@ -1,0 +1,1 @@
+Light registration, used for register passports with algos not implemented in circuits.
