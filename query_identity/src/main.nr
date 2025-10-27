@@ -1,4 +1,5 @@
 use noir_dl::query::query_identity;
+
 fn main(
     event_id: Field,
     event_data: Field,

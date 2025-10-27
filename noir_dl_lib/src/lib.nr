@@ -1,5 +1,4 @@
 pub mod bignum;
-pub mod test_main;
 pub mod sigver;
 pub mod big_curve;
 pub mod rsa;
@@ -12,5 +11,5 @@ pub mod smt;
 pub mod utils;
 pub mod lite;
 pub mod query;
-mod not_passports_zk_circuits;
-use not_passports_zk_circuits::register_identity;
+pub mod not_passports_zk_circuits;
+

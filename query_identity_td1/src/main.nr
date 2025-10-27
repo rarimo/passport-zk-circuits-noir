@@ -21,7 +21,7 @@ fn main(
     siblings: [Field; 80],
     timestamp: Field,
     identity_counter: Field,
-) -> pub (Field, Field, Field, Field, Field, Field, Field, Field, Field, Field, Field, Field, Field, Field, Field, Field, Field, Field, Field, Field, Field, Field, Field){
+) -> pub (Field, Field, Field, Field, Field, Field, Field, Field, Field, Field, Field, Field, Field, Field, Field, Field, Field, Field, Field, Field, Field, Field, Field, Field){
     let tmp = query_identity_td1(
         event_id,
         event_data,
@@ -45,5 +45,5 @@ fn main(
         identity_counter,
     );
 
-    (tmp.0, tmp.1, tmp.2, tmp.3, tmp.4, tmp.5, tmp.6, tmp.7, tmp.8, event_id, event_data, id_state_root, selector, current_date, timestamp_lowerbound, timestamp_upperbound, identity_count_lowerbound, identity_count_upperbound, birth_date_lowerbound, birth_date_upperbound, expiration_date_lowerbound, expiration_date_upperbound, citizenship_mask)
+    (tmp.0, tmp.1, tmp.2, tmp.3, tmp.4, tmp.5, tmp.6, tmp.7, tmp.8, tmp.9, event_id, event_data, id_state_root, selector, current_date, timestamp_lowerbound, timestamp_upperbound, identity_count_lowerbound, identity_count_upperbound, birth_date_lowerbound, birth_date_upperbound, expiration_date_lowerbound, expiration_date_upperbound, citizenship_mask)
 }
