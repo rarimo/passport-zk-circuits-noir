@@ -1,6 +1,7 @@
 [package]
-name = "noir_dl"
-type = "bin"
+name = "lib"
+type = "lib"
+path = "src/lib.rs"
 authors = [""]
 
 [dependencies]

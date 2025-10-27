@@ -1,20 +1,6 @@
 //registerIdentity_2_256_3_6_336_264_21_2448_6_2008
-pub mod bignum;
 pub mod test_main;
-pub mod sigver;
-pub mod big_curve;
-pub mod rsa;
-pub mod sha1;
-pub mod sha224;
-pub mod sha384;
-pub mod rsa_pss;
-pub mod jubjub;
-pub mod smt;
-pub mod utils;
-pub mod lite;
-pub mod query;
-mod not_passports_zk_circuits;
-use not_passports_zk_circuits::register_identity;
+use noir_dl::not_passports_zk_circuits::register_identity;
 
 fn main(
 	dg1: [u8; 93],

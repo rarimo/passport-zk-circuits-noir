@@ -1,0 +1,7 @@
+[package]
+name = "query_identity"
+type = "bin"
+authors = [""]
+
+[dependencies]
+noir_dl = {path = "../noir_dl_lib"}
