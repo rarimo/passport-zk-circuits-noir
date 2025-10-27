@@ -1,3 +1,4 @@
+//registerIdentity_2_256_3_6_336_264_21_2448_6_2008
 pub mod bignum;
 pub mod test_main;
 pub mod sigver;
@@ -11,17 +12,36 @@ pub mod jubjub;
 pub mod smt;
 pub mod utils;
 pub mod lite;
-pub mod not_passports_zk_circuits;
-use lite::register_identity_light;
+pub mod query;
+mod not_passports_zk_circuits;
+use not_passports_zk_circuits::register_identity;
 
 fn main(
-	dg1: [u8; 95],
+	dg1: [u8; 93],
+	dg15: [u8; 315],
+	ec: [u8; 338],
+	sa: [u8; 74],
+	pk: [Field; 35],
+	reduction_pk: [Field; 35],
+	sig: [Field; 35],
 	sk_identity: Field,
-) -> pub (Field, Field, Field){
-	let tmp = register_identity_light::<
-		95,
-		32
-	>(
-		dg1, sk_identity);
-	(tmp.0, tmp.1, tmp.2)
+	icao_root: Field,
+	inclusion_branches: [Field; 80]) -> pub (Field, Field, Field, Field, Field){
+	let tmp = register_identity::<
+		93,
+		315,
+		338,
+		74,
+		35,
+		0,
+		32,
+		32,
+		2,
+		33,
+		306,
+		42,
+		21,
+		251>(
+	dg1, dg15, ec, sa, pk, reduction_pk, sig, sk_identity, icao_root, inclusion_branches);
+	(tmp.0, tmp.1, tmp.2, tmp.3, icao_root)
 }

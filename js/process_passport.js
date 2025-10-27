@@ -7,7 +7,7 @@ import { createHash } from 'crypto';
 
 const reHex = /^\s*(?:[0-9A-Fa-f][0-9A-Fa-f]\s*)+$/
 const resultFile = "../Prover.toml"
-const passportFile = "germ.json"
+const passportFile = "tmp.json"
 function print(x){
     console.log(x)
 }
