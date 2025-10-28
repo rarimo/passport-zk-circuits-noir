@@ -85,3 +85,30 @@ Example output:
  "5298352502788", // 22 - expirationDateUpperbound  
  "0" // 23 - citizenshipMask  
 ]
+
+| Index | signal                      | Description                                                                               |
+|-------|-----------------------------|-------------------------------------------------------------------------------------|
+| 0     | nullifier                   | The unique identifier in terms of event. If you need keep your users unique use nullifier as primary key.    |
+| 1     | birthDate                   | Never should be requested without extreme need. Use birthDateLowerbound and birthDateUpperbound instead.                                  |
+| 2     | expirationDate              | Please do not request it also. Use expirationDateLowerbound and expirationDateUpperbound.                                                   |
+| 3     | name                        | First name of the user.                                                                                   |
+| 4     | nationality                 | Nationality in ISO 3166-1 alpha-3 format.                                                                                  |
+| 5     | citizenship                 | Citizenship in ISO 3166-1 alpha-3 format.                                                                           |
+| 6     | sex                         | M or F.                                                                                   |
+| 7     | documentNumberHash          | Hash of document number
+| 8     | personalNumberHash          | Hash of personal number
+| 9     | documentType                | "ID"
+| 10    | eventID                     | Unique random indetifier of event. It guarantees the untracability.         |
+| 11    | eventData                   | Some arbitrary data with constraints on it. Could be eth address or hash of email etc.                                     |
+| 12    | idStateRoot                 | Root of registration tree.         |
+| 13    | selector                    | Bitmask of [selected](https://github.com/rarimo/passport-zk-circuits/blob/main/README.md#selector) fields to reveal.                        |
+| 14    | currentDate                 | Just current date in same format (0x323531303238).                                                                     |
+| 15    | timestampLowerbound         | The value must be less than registration time.                                                                                   |
+| 16    | timestampUpperbound         | The value must be greater than registration time.                                                                                    |
+| 17    | identityCounterLowerbound   | The value must be less than number of registrations of the same passport.                                                                   |
+| 18    | identityCounterUpperbound   | The value must be greater or equal than number of registrations of the same passport.                                                       |
+| 19    | birthDateLowerbound         | The value must be less than actual birth date.                                                                      |
+| 20    | birthDateUpperbound         | The value must be greater than actual birth date.                                                                           |
+| 21    | expirationDateLowerbound    | The value must be less than expiration date of the passport.                                                                       |
+| 22    | expirationDateUpperbound    | The value must be greater than expiration date of the passport.                                                                       |
+| 23    | citizenshipMask             | Ask Misha.  
