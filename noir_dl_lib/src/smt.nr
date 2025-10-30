@@ -88,7 +88,6 @@ pub fn smt_verifier<let N_LEVELS: u32>(
     for i in 1..N_LEVELS{
         levels[N_LEVELS - 1 - i] = smt_verifier_level(sm_outs[N_LEVELS - 1 - i].1, sm_outs[N_LEVELS - 1 - i].0, siblings[N_LEVELS - 1 - i], hash1_new, key_bits[N_LEVELS - 1 - i], levels[N_LEVELS - i]);
     }
-
     (levels[0] == root) as u1
 }
 
