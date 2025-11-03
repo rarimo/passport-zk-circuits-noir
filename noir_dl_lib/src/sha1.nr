@@ -28,15 +28,20 @@ fn init() -> ([u32; 5]) {
     [0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476, 0xc3d2e1f0]
 }
 
-fn rotate_left(a: u32, b: u8) -> u32 {
-    let bits = (a as Field).to_be_bits::<32>();
-    let mut res = 0;
-    let mut current = 1 << 31;
-    for i in 0..32 {
-        res += (bits[(i + b) % 32] as u32) * current;
-        current >>= 1;
-    }
-    res
+//----------------------------------------------------------------------------------
+// For those who uses nargo version = 1.0.0-beta.1 (maybe in some other too).
+// This version of noir has an issue with lookup for bit operation.
+// Issue was spoted with sha-1, and leads here.
+// Problem lied in >> operator.
+// This one works perfect while it is used in native noir test (run `nargo test` command)
+// But when it used to calculate witness, it works incorrect.
+// At first, we had ((a << b) & 0xFFFFFFFF) | (a >> (32 - b))
+// To avoid this problem we change a >> (32 - b) with a / 2**(32-b).
+// Btw, << operator works fine it both cases.
+
+fn rotate_left<let b: u8>(a: u32) -> u32 {
+    let two_pow_32_minus_b = 1 << (32 - b);
+    ((a << b) & 0xFFFFFFFF) + (a / two_pow_32_minus_b)
 }
 
 fn process_chunk(state: [u32; 5], chunk: [u32; 16]) -> [u32; 5] {
@@ -46,7 +51,7 @@ fn process_chunk(state: [u32; 5], chunk: [u32; 16]) -> [u32; 5] {
         w[i] = chunk[i];
     }
     for i in 16..80 {
-        w[i] = rotate_left(w[i - 3] ^ w[i - 8] ^ w[i - 14] ^ w[i - 16], 1);
+        w[i] = rotate_left::<1>(w[i - 3] ^ w[i - 8] ^ w[i - 14] ^ w[i - 16]);
     }
 
     let mut a: u32 = state[0];
@@ -78,12 +83,12 @@ fn process_chunk(state: [u32; 5], chunk: [u32; 16]) -> [u32; 5] {
         }
 
         let temp: u32 = (
-            (rotate_left(a, 5) as u64 + f as u64 + e as u64 + w[i] as u64 + k as u64) & 0xFFFFFFFF
+            (rotate_left::<5>(a) as u64 + f as u64 + e as u64 + w[i] as u64 + k as u64) & 0xFFFFFFFF
         ) as u32;
 
         e = d;
         d = c;
-        c = rotate_left(b, 30);
+        c = rotate_left::<30>(b);
         b = a;
         a = temp;
     }
