@@ -99,20 +99,20 @@ This proposal includes the mechanism for selecting the register identity circuit
 **Signature type table:**
 | TYPE | ALGO   | BITS           | E / CURVE           | SALT | HASH_ALGO |
 |------|--------|----------------|---------------------|------|-----------|
-| 1    | RSA    | 2048 = 64*32   | 65537 / -             | -    | 256       |
-| 2    | RSA    | 4096 = 64*64   | 65537 / -             | -    | 256       |
-| 3    | RSA    | 2048 = 64*32   | 65537 / -             | -    | 160       |
-| 4    | RSA    | 3072 = 64*48   | 37187 / -             | -    | 160       |
-| 5    | RSA    | 2048 = 64*32   | 65537 / -             | -    | 512       |
-| 6    | RSA    | 2048           | 58333 / -             | -    | 160       |
-| 7    | RSA    | 3072           | 45347 / -             | -    | 160       |
-| 8    | RSA    | 3072           | 46271 / -             | -    | 160       |
-| 10   | RSAPSS | 2048 = 64*32   | 3 / -                 | 32   | 256       |
-| 11   | RSAPSS | 2048 = 64*32   | 65537 / -             | 32   | 256       |
-| 12   | RSAPSS | 2048 = 64*32   | 65537 / -             | 64   | 256       |
-| 13   | RSAPSS | 2048 = 64*32   | 65537 / -             | 48   | 384       |
-| 14   | RSAPSS | 3072 = 64*48   | 65537 / -             | 32   | 256       |
-| 15   | RSAPSS | 2048 = 64*32   | 65537 / -             | 64   | 512       |
+| 1    | RSA    | 2048 = 64*32   | 65537 / -           | -    | 256       |
+| 2    | RSA    | 4096 = 64*64   | 65537 / -           | -    | 256       |
+| 3    | RSA    | 2048 = 64*32   | 65537 / -           | -    | 160       |
+| 4    | RSA    | 3072 = 64*48   | 37187 / -           | -    | 160       |
+| 5    | RSA    | 2048 = 64*32   | 65537 / -           | -    | 512       |
+| 6    | RSA    | 2048           | 58333 / -           | -    | 160       |
+| 7    | RSA    | 3072           | 45347 / -           | -    | 160       |
+| 8    | RSA    | 3072           | 46271 / -           | -    | 160       |
+| 10   | RSAPSS | 2048 = 64*32   | 3 / -               | 32   | 256       |
+| 11   | RSAPSS | 2048 = 64*32   | 65537 / -           | 32   | 256       |
+| 12   | RSAPSS | 2048 = 64*32   | 65537 / -           | 64   | 256       |
+| 13   | RSAPSS | 2048 = 64*32   | 65537 / -           | 48   | 384       |
+| 14   | RSAPSS | 3072 = 64*48   | 65537 / -           | 32   | 256       |
+| 15   | RSAPSS | 2048 = 64*32   | 65537 / -           | 64   | 512       |
 | 20   | ECDSA  | 256 = 64*4     | - / secp256r1       | -    | 256       |
 | 21   | ECDSA  | 256 = 64*4     | - / brainpoolP256r1 | -    | 256       |
 | 22   | ECDSA  | 320 = 64*5     | - / brainpoolP320r1 | -    | 256       |
@@ -135,6 +135,7 @@ This proposal includes the mechanism for selecting the register identity circuit
 | 22 | ECDSA | - | - | - | Brainpool320r1 | 256 |
 | 23 | ECDSA | - | - | - | secp192r1 | 160 |
 | 24 | ECDSA | - | - | - | secp384r1 | 384 |
+| 25 | ECDSA | - | - | - | Brainpool224t1 | 224 |
 
 Note: Any RSA goes as type 1, but we handle different ecdsa prime curves as different algos in production.
 
