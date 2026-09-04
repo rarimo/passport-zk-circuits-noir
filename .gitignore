@@ -16,3 +16,4 @@ circuits/*
 logs.*
 tmp.txt
 process_passport_*.js
+regen_out/*

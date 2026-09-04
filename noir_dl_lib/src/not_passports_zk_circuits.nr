@@ -775,28 +775,37 @@ fn extract_pk_hash<
     let mut out = 0;
 
     if (SIG_TYPE < 20){
-        let mut pk_bits: [u1; 960] = [0; 960];
-        for i in 0..8{
-            let bits: [u1; 120] = pubkey[i].to_le_bits();
-            for j in 0..120{
-                pk_bits[i * 120 + j] = bits[j];
+        let mut key_bytes: [u8; N * 15] = [0; N * 15];
+        for i in 0..N{
+            let limb_bytes: [u8; 15] = pubkey[N - 1 - i].to_be_bytes();
+            for j in 0..15{
+                key_bytes[i * 15 + j] = limb_bytes[j];
             }
         }
 
-        let mut chunks: [Field; 15] = [0; 15];
-        for i in 0..15{
-            let mut current = 1;
-            for j in 0..64{
-                chunks[i] += (pk_bits[i * 64 + j] as Field) * current;
-                current *= 2;
-            }
-        }
-        let mut hasher = PoseidonHasher::default();
-        for i in 0..5{
-            hasher.write(chunks[i * 3] * 340282366920938463463374607431768211456 + chunks[i * 3 + 1] * 18446744073709551616 + chunks[i * 3 + 2]);
+        let mut mod_bytes: [u8; (N * 15 / 128) * 128] = [0; (N * 15 / 128) * 128];
+        let off = N * 15 - mod_bytes.len();
+
+        // The limb array is wider than the key: N*15 bytes of room for a
+        // 256/384/512-byte modulus. Only the low mod_bytes.len() bytes are hashed,
+        // so the dropped prefix MUST be zero -- otherwise two moduli differing
+        // only above the canonical key size would share a leaf, which is the
+        // partial-key-binding bug all over again at a wider window.
+        for i in 0..off{
+            assert(key_bytes[i] == 0, "modulus exceeds canonical key size");
         }
 
-        out = hasher.finish();
+        for i in 0..mod_bytes.len(){
+            mod_bytes[i] = key_bytes[off + i];
+        }
+
+        let hash = sha256::digest(mod_bytes);
+
+        let mut hi: [u8; 31] = [0; 31];
+        for i in 0..31{
+            hi[i] = hash[i];
+        }
+        out = Field::from_be_bytes(hi);
 
     } else {
 
@@ -902,4 +911,106 @@ pub fn passport_hash<let HASH_SIZE: u32, let N: u32>(preimage: [u8; N]) -> [u8; 
     }
 
     out
+}
+
+#[test]
+fn poc_partial_key_binding_fixed() {
+    let n_genuine: [Field; 18] = [
+        134402708674907296066134080869543109,
+        228618976709970863848509042956092863,
+        836831950160424231839472768624411101,
+        628600496496345723553532717491433252,
+        453987089059458384769627437976015,
+        272500716366917636644096983029426840,
+        1276337325290311415849766036381209347,
+        1155255942082190802650745146434744576,
+        70236803410798777488671946028796252,
+        1229314882698004271150515696775176631,
+        692227320977817650278244570331178496,
+        244946199275613213770602161464115037,
+        297192973725271773817349710609958377,
+        95750657909233827892584200929425757,
+        893744255240661684783384383607129134,
+        156957726056453089014066509237085398,
+        1311837473066311836443023882565355724,
+        124];
+    let n_attacker: [Field; 18] = [
+        134402708674907296066134080869543109,
+        228618976709970863848509042956092863,
+        836831950160424231839472768624411101,
+        628600496496345723553532717491433252,
+        453987089059458384769627437976015,
+        272500716366917636644096983029426840,
+        1276337325290311415849766036381209347,
+        1155255942082190802650745146434744576,
+        1101570778782953206053496065305898252,
+        308744339810482035310576858771238960,
+        587996212410951869220133628011656063,
+        1065213807440279589969922958128693822,
+        483457007965412003486680077995665821,
+        600197280016618361477699994705839145,
+        1318968193325396721381729546578506438,
+        462442603976484884616093303635230660,
+        1251641607678081910869983088520578760,
+        95];
+
+    // sanity: the two moduli are genuinely different keys (a high limb differs)
+    assert(n_genuine[8] != n_attacker[8], "moduli must differ");
+
+    // real circuit leaf for each key
+    let leaf_g = extract_pk_hash::<18, 0, 3>(n_genuine);
+    let leaf_a = extract_pk_hash::<18, 0, 3>(n_attacker);
+
+    assert(leaf_g != leaf_a, "leaves are equal");
+}
+
+// cross-check: noir SHA-256 leaf == circom leaf == python reference for one modulus
+#[test]
+fn poc_sha_leaf_crosscheck() {
+    let n: [Field; 18] = [
+        1234605616436508553,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        448982827841835430569109824796098560,
+        11806310404660,
+        128];
+    let leaf = extract_pk_hash::<18, 0, 3>(n);
+    assert(leaf == 430379298733276799880576870782320939824392926215628435008604509630563814847, "noir leaf != circom/python reference");
+}
+
+#[test]
+fn poc_sha_leaf_crosscheck_4096() {
+    let n: [Field; 35] = [19088743, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 32768];
+    let leaf = extract_pk_hash::<35, 0, 2>(n);
+    assert(leaf == 214575274204447809147297173528543900828920263053495209508425364791633260179, "noir 4096 leaf != circom/python");
+}
+
+// The limb array holds N*15 bytes but only the low 256 (RSA-2048) / 512 (RSA-4096)
+// are hashed. Bits above the canonical key size must be rejected, otherwise two
+// moduli differing only up there share a leaf -- partial key binding again.
+
+// bit 2047 set: the largest genuine RSA-2048 modulus. Top limb = 255, prefix is zero.
+#[test]
+fn oversize_modulus_2048_boundary_ok() {
+    let mut n: [Field; 18] = [0; 18];
+    n[0] = 1;
+    n[17] = 255;               // limb 17 spans bits 2040..2159; 255 -> up to bit 2047
+    let _ = extract_pk_hash::<18, 0, 3>(n);
+}
+
+// bit 2048 set: one bit past the key size, lands in the dropped prefix.
+#[test(should_fail_with = "modulus exceeds canonical key size")]
+fn oversize_modulus_2048_rejected() {
+    let mut n: [Field; 18] = [0; 18];
+    n[0] = 1;
+    n[17] = 256;               // bit 2048 -> key_bytes[13] != 0
+    let _ = extract_pk_hash::<18, 0, 3>(n);
+}
+
+// same for RSA-4096: limb 34 spans bits 4080..4199, so bit 4096 is out of range.
+#[test(should_fail_with = "modulus exceeds canonical key size")]
+fn oversize_modulus_4096_rejected() {
+    let mut n: [Field; 35] = [0; 35];
+    n[0] = 1;
+    n[34] = 65536;             // bit 4096 -> key_bytes[12] != 0
+    let _ = extract_pk_hash::<35, 0, 2>(n);
 }
