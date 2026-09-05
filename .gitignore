@@ -17,3 +17,5 @@ logs.*
 tmp.txt
 process_passport_*.js
 regen_out/*
+build_noir_verifiers.py
+regen_noir.py
